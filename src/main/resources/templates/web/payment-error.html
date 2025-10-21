@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi thanh toán - Pet Shop</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" th:href="@{/css/web/header.css}">
+    <link rel="stylesheet" th:href="@{/css/web/footer.css}">
+    <style>
+        .error-section {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .error-content {
+            max-width: 600px;
+            text-align: center;
+            background: white;
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 30px;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .error-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .error-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .error-info p {
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .error-info span {
+            color: #888;
+        }
+        
+        .error-info strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-retry, .btn-home {
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-retry {
+            background: #ff6b35;
+            color: white;
+        }
+        
+        .btn-retry:hover {
+            background: #ff5722;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-home {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-home:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{web/layout/header :: header}"></div>
+    
+    <section class="error-section">
+        <div class="container">
+            <div class="error-content">
+                <div class="error-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                
+                <h1 class="error-title">Thanh toán thất bại!</h1>
+                
+                <div class="error-info" th:if="${datHang}">
+                    <p>
+                        <span>Mã đơn hàng:</span> 
+                        <strong th:text="${datHang.maDatHang}"></strong>
+                    </p>
+                    <p>
+                        <span>Tổng tiền:</span> 
+                        <strong th:text="'₫' + ${#numbers.formatDecimal(datHang.tongTien, 0, 'COMMA', 0, 'POINT')}"></strong>
+                    </p>
+                </div>
+                
+                <p class="error-message" th:if="${error}">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span th:text="${error}"></span>
+                </p>
+                
+                <p class="error-message" th:unless="${error}">
+                    Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.
+                </p>
+                
+                <div class="error-actions">
+                    <a th:href="@{/orders}" class="btn-retry" th:if="${datHang}">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        Thử lại thanh toán
+                    </a>
+                    <a th:href="@{/}" class="btn-home">
+                        <i class="fa-solid fa-house"></i>
+                        Về trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div th:replace="~{web/layout/footer :: footer}"></div>
+</body>
+</html>
