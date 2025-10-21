@@ -353,12 +353,6 @@ function displayUserProfile(user) {
                             <label class="form-label">Địa chỉ chi tiết *</label>
                             <textarea class="form-input" id="diaChiChiTiet" rows="3" required maxlength="500"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="macDinh">
-                                <span>Đặt làm địa chỉ mặc định</span>
-                            </label>
-                        </div>
                         <div class="modal-actions">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Lưu
@@ -966,7 +960,6 @@ function editAddress(id) {
     document.getElementById('tenNguoiNhan').value = addr.tenNguoiNhan;
     document.getElementById('soDienThoaiAddress').value = addr.soDienThoai;
     document.getElementById('diaChiChiTiet').value = addr.diaChiChiTiet;
-    document.getElementById('macDinh').checked = addr.macDinh;
     
     document.getElementById('addressModal').style.display = 'flex';
 }
@@ -983,8 +976,8 @@ async function saveAddress() {
     const data = {
         tenNguoiNhan: document.getElementById('tenNguoiNhan').value.trim(),
         soDienThoai: document.getElementById('soDienThoaiAddress').value.trim(),
-        diaChiChiTiet: document.getElementById('diaChiChiTiet').value.trim(),
-        macDinh: document.getElementById('macDinh').checked
+        diaChiChiTiet: document.getElementById('diaChiChiTiet').value.trim()
+        // Không gửi macDinh - luôn là false khi người dùng tự thêm
     };
 
     const token = localStorage.getItem('jwtToken');

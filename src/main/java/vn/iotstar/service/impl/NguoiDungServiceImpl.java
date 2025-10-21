@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.iotstar.entity.DiaChi;
 import vn.iotstar.entity.NguoiDung;
 import vn.iotstar.entity.VaiTro;
 import vn.iotstar.entity.CuaHang;
@@ -14,6 +15,7 @@ import vn.iotstar.model.NguoiDungModel;
 import vn.iotstar.repository.NguoiDungRepository;
 import vn.iotstar.repository.VaiTroRepository;
 import vn.iotstar.repository.CuaHangRepository;
+import vn.iotstar.service.DiaChiService;
 import vn.iotstar.service.NguoiDungService;
 import vn.iotstar.specification.NguoiDungSpecification;
 
@@ -35,6 +37,9 @@ public class NguoiDungServiceImpl implements NguoiDungService {
     
     @Autowired
     private CuaHangRepository cuaHangRepository;
+    
+    @Autowired
+    private DiaChiService diaChiService;
 
     @Override
     public Page<NguoiDung> getAllUsers(Pageable pageable) {
@@ -86,13 +91,33 @@ public class NguoiDungServiceImpl implements NguoiDungService {
                 .matKhau(passwordEncoder.encode(model.getMatKhau()))
                 .sdt(model.getSdt())
                 .diaChi(model.getDiaChi())
-                .hinhAnh(model.getHinhAnh()) // FIX: Thêm trường hinhAnh
+                .hinhAnh(model.getHinhAnh())
                 .vaiTro(vaiTro)
                 .trangThai(model.getTrangThai() != null ? model.getTrangThai() : "Hoạt động")
                 .build();
         
         NguoiDung savedUser = nguoiDungRepository.save(nguoiDung);
         System.out.println("User created - ID: " + savedUser.getMaNguoiDung() + ", HinhAnh: " + savedUser.getHinhAnh());
+        
+        // Tự động tạo địa chỉ mặc định từ thông tin trong bảng NguoiDung
+        if (savedUser.getDiaChi() != null && !savedUser.getDiaChi().trim().isEmpty() &&
+            savedUser.getSdt() != null && !savedUser.getSdt().trim().isEmpty()) {
+            try {
+                DiaChi diaChiMacDinh = DiaChi.builder()
+                    .nguoiDung(savedUser)
+                    .tenNguoiNhan(savedUser.getTenNguoiDung())
+                    .soDienThoai(savedUser.getSdt())
+                    .diaChiChiTiet(savedUser.getDiaChi())
+                    .macDinh(true)
+                    .trangThai("Hoạt động")
+                    .build();
+                diaChiService.save(diaChiMacDinh);
+                System.out.println("Default address created for user: " + savedUser.getMaNguoiDung());
+            } catch (Exception e) {
+                System.err.println("Lỗi khi tạo địa chỉ mặc định: " + e.getMessage());
+            }
+        }
+        
         System.out.println("=== CREATE USER SUCCESS ===");
         
         return savedUser;

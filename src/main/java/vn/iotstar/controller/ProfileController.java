@@ -417,12 +417,14 @@ public class ProfileController {
             NguoiDung user = nguoiDungRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
+            // Khi người dùng tự thêm địa chỉ mới, mặc định macDinh = false
+            // Chỉ có địa chỉ từ đăng ký (tự động tạo) mới là mặc định
             DiaChi diaChi = DiaChi.builder()
                 .nguoiDung(user)
                 .tenNguoiNhan(addressDTO.getTenNguoiNhan())
                 .soDienThoai(addressDTO.getSoDienThoai())
                 .diaChiChiTiet(addressDTO.getDiaChiChiTiet())
-                .macDinh(addressDTO.getMacDinh() != null ? addressDTO.getMacDinh() : false)
+                .macDinh(false) // Luôn là false khi người dùng tự thêm
                 .trangThai("Hoạt động")
                 .build();
             
