@@ -76,4 +76,7 @@ public interface SanPhamService {
     Page<SanPham> findBestSellingProductsByCategory(DanhMuc danhMuc, Pageable pageable);
     Page<SanPham> findMostLikedProductsByCategory(DanhMuc danhMuc, Pageable pageable);
     Page<SanPham> findTopRatedProductsByCategory(DanhMuc danhMuc, Pageable pageable);
+    
+    // Lấy sản phẩm bán chạy theo danh mục (số lượng đã bán > 10)
+    List<SanPham> findTop4BestSellingProductsByDanhMuc(DanhMuc danhMuc);
 }

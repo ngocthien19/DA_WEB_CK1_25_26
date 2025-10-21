@@ -118,4 +118,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>,
 
     @Query("SELECT s FROM SanPham s WHERE s.danhMuc = :danhMuc AND s.trangThai = true AND s.cuaHang.trangThai = true ORDER BY s.saoDanhGia DESC")
     Page<SanPham> findByDanhMucAndTrangThaiTrueAndCuaHangTrangThaiTrueOrderBySaoDanhGiaDesc(@Param("danhMuc") DanhMuc danhMuc, Pageable pageable);
+    
+    // Lấy top sản phẩm bán chạy theo danh mục (số lượng đã bán > 10), sắp xếp từ cao đến thấp
+    @Query("SELECT s FROM SanPham s WHERE s.danhMuc = :danhMuc AND s.trangThai = true AND s.cuaHang.trangThai = true AND s.soLuongDaBan > 10 ORDER BY s.soLuongDaBan DESC")
+    List<SanPham> findTop4ByDanhMucAndTrangThaiTrueAndSoLuongDaBanGreaterThan10OrderBySoLuongDaBanDesc(@Param("danhMuc") DanhMuc danhMuc, Pageable pageable);
 }
