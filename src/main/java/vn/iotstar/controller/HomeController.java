@@ -347,7 +347,7 @@ public class HomeController {
     public String productList(
             @PathVariable("tenDanhMuc") String tenDanhMuc,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) List<String> price,
             @RequestParam(required = false) List<String> store,
             @RequestParam(required = false) List<String> loai,
@@ -468,7 +468,7 @@ public class HomeController {
     @GetMapping("/products")
     public String allProducts(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) List<String> price,
             @RequestParam(required = false) List<String> store,
             @RequestParam(required = false) List<String> loai,

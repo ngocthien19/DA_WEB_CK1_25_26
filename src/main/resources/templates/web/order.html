@@ -100,26 +100,59 @@
                     <div class="order-summary">
                         <h3>Thông tin đơn hàng</h3>
                         
+                        <!-- Chọn địa chỉ giao hàng -->
                         <div class="form-group">
-                            <label for="diaChiGiaoHang">Địa chỉ giao hàng *</label>
-                            <input type="text" 
-                                   id="diaChiGiaoHang" 
-                                   th:field="*{diaChiGiaoHang}"
-                                   class="form-control"
-                                   required
-                                   placeholder="Nhập địa chỉ giao hàng">
-                            <small class="form-text">Địa chỉ này sẽ được lưu cho các lần mua hàng sau</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="soDienThoai">Số điện thoại *</label>
-                            <input type="tel" 
-                                   id="soDienThoai" 
-                                   th:field="*{soDienThoai}"
-                                   class="form-control"
-                                   required
-                                   placeholder="Nhập số điện thoại">
-                            <small class="form-text">Số điện thoại để liên hệ khi giao hàng</small>
+                            <label>Địa chỉ giao hàng *</label>
+                            
+                            <div th:if="${diaChis != null and !diaChis.empty}" class="address-list">
+                                <div th:each="diaChi, iterStat : ${diaChis}" class="address-option">
+                                    <input type="radio" 
+                                           th:id="'address_' + ${diaChi.maDiaChi}"
+                                           th:field="*{maDiaChi}"
+                                           th:value="${diaChi.maDiaChi}"
+                                           class="address-radio"
+                                           th:checked="${iterStat.index == 0 or diaChi.macDinh}"
+                                           required>
+                                    <label th:for="'address_' + ${diaChi.maDiaChi}" class="address-label">
+                                        <span class="custom-radio"></span>
+                                        <div class="address-info">
+                                            <div class="address-name">
+                                                <strong th:text="${diaChi.tenNguoiNhan}"></strong>
+                                                <span th:if="${diaChi.macDinh}" class="badge-default">Mặc định</span>
+                                            </div>
+                                            <div class="address-phone" th:text="${diaChi.soDienThoai}"></div>
+                                            <div class="address-detail" th:text="${diaChi.diaChiChiTiet}"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="address-option add-new">
+                                    <a href="/profile" class="btn-add-address">
+                                        <i class="fa-solid fa-plus"></i>
+                                        Thêm địa chỉ mới
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Fallback: Nếu chưa có địa chỉ nào -->
+                            <div th:if="${diaChis == null or diaChis.empty}" class="no-address">
+                                <p>Bạn chưa có địa chỉ giao hàng nào.</p>
+                                <input type="text" 
+                                       id="diaChiGiaoHang" 
+                                       th:field="*{diaChiGiaoHang}"
+                                       class="form-control"
+                                       required
+                                       placeholder="Nhập địa chỉ giao hàng">
+                                <input type="tel" 
+                                       id="soDienThoai" 
+                                       th:field="*{soDienThoai}"
+                                       class="form-control"
+                                       style="margin-top: 10px;"
+                                       required
+                                       placeholder="Nhập số điện thoại">
+                                <small class="form-text">
+                                    <a href="/profile">Thêm địa chỉ vào sổ địa chỉ</a> để sử dụng cho các lần mua hàng sau
+                                </small>
+                            </div>
                         </div>
                         
                         <div class="form-group">

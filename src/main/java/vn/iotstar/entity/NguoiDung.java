@@ -69,6 +69,9 @@ public class NguoiDung {
     @OneToMany(mappedBy = "nguoiDung", cascade = CascadeType.ALL)
     private List<VanChuyen> vanChuyens; // Thêm quan hệ mới
     
+    @OneToMany(mappedBy = "nguoiDung", cascade = CascadeType.ALL)
+    private List<DiaChi> diaChis;
+    
     // Phương thức kiểm tra xem người dùng có phải là shipper không
     public boolean isShipper() {
         return vaiTro != null && "SHIPPER".equalsIgnoreCase(vaiTro.getTenVaiTro());

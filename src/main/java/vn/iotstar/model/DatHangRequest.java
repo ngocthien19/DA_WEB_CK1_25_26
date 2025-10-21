@@ -8,7 +8,8 @@ import java.util.Map;
 public class DatHangRequest {
     private Map<Integer, Integer> selectedPromotions; // Map<MaCuaHang, MaKhuyenMai>
     private String ghiChu;
-    private String diaChiGiaoHang;
+    private Integer maDiaChi; // ID của địa chỉ được chọn
+    private String diaChiGiaoHang; // Fallback nếu không có địa chỉ nào trong danh sách
     private String soDienThoai;
     private String phuongThucThanhToan;
 }

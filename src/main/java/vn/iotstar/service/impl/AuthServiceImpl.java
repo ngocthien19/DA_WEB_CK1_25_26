@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vn.iotstar.entity.DiaChi;
 import vn.iotstar.entity.NguoiDung;
 import vn.iotstar.entity.VaiTro;
 import vn.iotstar.model.ApiResponse;
@@ -15,6 +17,7 @@ import vn.iotstar.model.NguoiDungModel;
 import vn.iotstar.repository.NguoiDungRepository;
 import vn.iotstar.repository.VaiTroRepository;
 import vn.iotstar.service.AuthService;
+import vn.iotstar.service.DiaChiService;
 import vn.iotstar.util.JwtUtil;
 
 import java.util.Optional;
@@ -36,6 +39,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private DiaChiService diaChiService;
 
     @Override
     public ApiResponse<String> authenticateUser(LoginModel loginModel) {
@@ -54,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public ApiResponse<String> registerUser(NguoiDungModel signUpModel) {
         if (nguoiDungRepository.existsByEmail(signUpModel.getEmail())) {
             return ApiResponse.error("Email đã được sử dụng");
@@ -73,7 +80,28 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setVaiTro(userRole.get());
 
-        nguoiDungRepository.save(user);
+        // Lưu người dùng
+        NguoiDung savedUser = nguoiDungRepository.save(user);
+        
+        // Tự động tạo địa chỉ mặc định từ thông tin đăng ký
+        if (signUpModel.getDiaChi() != null && !signUpModel.getDiaChi().trim().isEmpty() &&
+            signUpModel.getSdt() != null && !signUpModel.getSdt().trim().isEmpty()) {
+            try {
+                DiaChi diaChiMacDinh = DiaChi.builder()
+                    .nguoiDung(savedUser)
+                    .tenNguoiNhan(signUpModel.getTenNguoiDung())
+                    .soDienThoai(signUpModel.getSdt())
+                    .diaChiChiTiet(signUpModel.getDiaChi())
+                    .macDinh(true)
+                    .trangThai("Hoạt động")
+                    .build();
+                diaChiService.save(diaChiMacDinh);
+            } catch (Exception e) {
+                // Không làm gián đoạn quá trình đăng ký nếu tạo địa chỉ thất bại
+                System.err.println("Lỗi khi tạo địa chỉ mặc định: " + e.getMessage());
+            }
+        }
+        
         return ApiResponse.success("Đăng ký người dùng thành công");
     }
 

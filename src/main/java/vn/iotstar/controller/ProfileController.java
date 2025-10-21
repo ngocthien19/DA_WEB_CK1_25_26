@@ -10,15 +10,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import vn.iotstar.entity.DanhMuc;
+import vn.iotstar.entity.DiaChi;
 import vn.iotstar.entity.NguoiDung;
 import vn.iotstar.model.ApiResponse;
+import vn.iotstar.model.DiaChiDTO;
 import vn.iotstar.model.UserProfileDTO;
 import vn.iotstar.repository.NguoiDungRepository;
 import vn.iotstar.service.DanhMucService;
+import vn.iotstar.service.DiaChiService;
 import vn.iotstar.util.JwtUtil;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/profile")
@@ -35,6 +39,9 @@ public class ProfileController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private DiaChiService diaChiService;
 
     @GetMapping
     public String showProfile(HttpServletRequest request, Model model) {
@@ -357,6 +364,217 @@ public class ProfileController {
             System.err.println("Error saving file: " + e.getMessage());
             throw new Exception("Lỗi khi lưu file: " + e.getMessage());
         }
+    }
+
+    // ============= API QUẢN LÝ ĐỊA CHỈ =============
+    
+    // Lấy danh sách địa chỉ của người dùng
+    @GetMapping("/api/user/addresses")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<List<DiaChiDTO>>> getUserAddresses(HttpServletRequest request) {
+        try {
+            String token = extractJwtFromRequest(request);
+            
+            if (token == null || !jwtUtil.validateJwtToken(token)) {
+                return ResponseEntity.status(401)
+                    .body(ApiResponse.error("Unauthorized: Token không hợp lệ"));
+            }
+            
+            String email = jwtUtil.getUserNameFromJwtToken(token);
+            NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            List<DiaChi> addresses = diaChiService.findActiveByNguoiDung(user);
+            List<DiaChiDTO> addressDTOs = addresses.stream()
+                .map(this::convertToAddressDTO)
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(ApiResponse.success(addressDTOs));
+            
+        } catch (Exception e) {
+            System.err.println("Error getting addresses: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(ApiResponse.error("Lỗi server: " + e.getMessage()));
+        }
+    }
+    
+    // Thêm địa chỉ mới
+    @PostMapping("/api/user/addresses")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<DiaChiDTO>> addAddress(
+            @RequestBody DiaChiDTO addressDTO,
+            HttpServletRequest request) {
+        try {
+            String token = extractJwtFromRequest(request);
+            
+            if (token == null || !jwtUtil.validateJwtToken(token)) {
+                return ResponseEntity.status(401)
+                    .body(ApiResponse.error("Unauthorized: Token không hợp lệ"));
+            }
+            
+            String email = jwtUtil.getUserNameFromJwtToken(token);
+            NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            DiaChi diaChi = DiaChi.builder()
+                .nguoiDung(user)
+                .tenNguoiNhan(addressDTO.getTenNguoiNhan())
+                .soDienThoai(addressDTO.getSoDienThoai())
+                .diaChiChiTiet(addressDTO.getDiaChiChiTiet())
+                .macDinh(addressDTO.getMacDinh() != null ? addressDTO.getMacDinh() : false)
+                .trangThai("Hoạt động")
+                .build();
+            
+            DiaChi savedAddress = diaChiService.save(diaChi);
+            DiaChiDTO resultDTO = convertToAddressDTO(savedAddress);
+            
+            return ResponseEntity.ok(ApiResponse.success(resultDTO));
+            
+        } catch (Exception e) {
+            System.err.println("Error adding address: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(ApiResponse.error("Lỗi server: " + e.getMessage()));
+        }
+    }
+    
+    // Cập nhật địa chỉ
+    @PutMapping("/api/user/addresses/{id}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<DiaChiDTO>> updateAddress(
+            @PathVariable Integer id,
+            @RequestBody DiaChiDTO addressDTO,
+            HttpServletRequest request) {
+        try {
+            String token = extractJwtFromRequest(request);
+            
+            if (token == null || !jwtUtil.validateJwtToken(token)) {
+                return ResponseEntity.status(401)
+                    .body(ApiResponse.error("Unauthorized: Token không hợp lệ"));
+            }
+            
+            String email = jwtUtil.getUserNameFromJwtToken(token);
+            NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            DiaChi diaChi = diaChiService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ"));
+            
+            // Kiểm tra địa chỉ có thuộc về user không
+            if (!diaChi.getNguoiDung().getMaNguoiDung().equals(user.getMaNguoiDung())) {
+                return ResponseEntity.status(403)
+                    .body(ApiResponse.error("Bạn không có quyền cập nhật địa chỉ này"));
+            }
+            
+            diaChi.setTenNguoiNhan(addressDTO.getTenNguoiNhan());
+            diaChi.setSoDienThoai(addressDTO.getSoDienThoai());
+            diaChi.setDiaChiChiTiet(addressDTO.getDiaChiChiTiet());
+            if (addressDTO.getMacDinh() != null) {
+                diaChi.setMacDinh(addressDTO.getMacDinh());
+            }
+            
+            DiaChi updatedAddress = diaChiService.save(diaChi);
+            DiaChiDTO resultDTO = convertToAddressDTO(updatedAddress);
+            
+            return ResponseEntity.ok(ApiResponse.success(resultDTO));
+            
+        } catch (Exception e) {
+            System.err.println("Error updating address: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(ApiResponse.error("Lỗi server: " + e.getMessage()));
+        }
+    }
+    
+    // Xóa địa chỉ
+    @DeleteMapping("/api/user/addresses/{id}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<String>> deleteAddress(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        try {
+            String token = extractJwtFromRequest(request);
+            
+            if (token == null || !jwtUtil.validateJwtToken(token)) {
+                return ResponseEntity.status(401)
+                    .body(ApiResponse.error("Unauthorized: Token không hợp lệ"));
+            }
+            
+            String email = jwtUtil.getUserNameFromJwtToken(token);
+            NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            DiaChi diaChi = diaChiService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ"));
+            
+            // Kiểm tra địa chỉ có thuộc về user không
+            if (!diaChi.getNguoiDung().getMaNguoiDung().equals(user.getMaNguoiDung())) {
+                return ResponseEntity.status(403)
+                    .body(ApiResponse.error("Bạn không có quyền xóa địa chỉ này"));
+            }
+            
+            diaChiService.delete(id);
+            
+            return ResponseEntity.ok(ApiResponse.success("Xóa địa chỉ thành công"));
+            
+        } catch (Exception e) {
+            System.err.println("Error deleting address: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(ApiResponse.error("Lỗi server: " + e.getMessage()));
+        }
+    }
+    
+    // Đặt địa chỉ làm mặc định
+    @PutMapping("/api/user/addresses/{id}/set-default")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<String>> setDefaultAddress(
+            @PathVariable Integer id,
+            HttpServletRequest request) {
+        try {
+            String token = extractJwtFromRequest(request);
+            
+            if (token == null || !jwtUtil.validateJwtToken(token)) {
+                return ResponseEntity.status(401)
+                    .body(ApiResponse.error("Unauthorized: Token không hợp lệ"));
+            }
+            
+            String email = jwtUtil.getUserNameFromJwtToken(token);
+            NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            DiaChi diaChi = diaChiService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ"));
+            
+            // Kiểm tra địa chỉ có thuộc về user không
+            if (!diaChi.getNguoiDung().getMaNguoiDung().equals(user.getMaNguoiDung())) {
+                return ResponseEntity.status(403)
+                    .body(ApiResponse.error("Bạn không có quyền thay đổi địa chỉ này"));
+            }
+            
+            diaChiService.setDefaultAddress(id, user);
+            
+            return ResponseEntity.ok(ApiResponse.success("Đặt địa chỉ mặc định thành công"));
+            
+        } catch (Exception e) {
+            System.err.println("Error setting default address: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                .body(ApiResponse.error("Lỗi server: " + e.getMessage()));
+        }
+    }
+    
+    // Helper method to convert DiaChi entity to DTO
+    private DiaChiDTO convertToAddressDTO(DiaChi diaChi) {
+        return DiaChiDTO.builder()
+            .maDiaChi(diaChi.getMaDiaChi())
+            .tenNguoiNhan(diaChi.getTenNguoiNhan())
+            .soDienThoai(diaChi.getSoDienThoai())
+            .diaChiChiTiet(diaChi.getDiaChiChiTiet())
+            .macDinh(diaChi.getMacDinh())
+            .trangThai(diaChi.getTrangThai())
+            .build();
     }
 
     // Request DTOs

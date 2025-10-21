@@ -45,6 +45,9 @@ public class OrderController {
     @Autowired
     private QRCodeService qrCodeService;
     
+    @Autowired
+    private DiaChiService diaChiService;
+    
     @GetMapping("/qr-payment")
     public String showQRPayment(@RequestParam Integer orderId, 
                               @RequestParam String method,
@@ -146,13 +149,28 @@ public class OrderController {
             // Tạo DatHangRequest với thông tin mặc định
             DatHangRequest datHangRequest = new DatHangRequest();
             
-            // Lấy địa chỉ mặc định từ thông tin người dùng
-            String defaultDiaChi = getDefaultAddress(nguoiDung);
-            datHangRequest.setDiaChiGiaoHang(defaultDiaChi);
+            // Lấy danh sách địa chỉ của người dùng
+            List<DiaChi> diaChis = diaChiService.findActiveByNguoiDung(nguoiDung);
             
-            // Lấy số điện thoại mặc định từ thông tin người dùng
-            String defaultSoDienThoai = getDefaultPhone(nguoiDung);
-            datHangRequest.setSoDienThoai(defaultSoDienThoai);
+            // Lấy địa chỉ mặc định
+            DiaChi defaultDiaChi = diaChiService.findDefaultByNguoiDung(nguoiDung).orElse(null);
+            
+            // Nếu có địa chỉ mặc định, set vào form
+            if (defaultDiaChi != null) {
+                datHangRequest.setMaDiaChi(defaultDiaChi.getMaDiaChi());
+            } else if (!diaChis.isEmpty()) {
+                // Nếu không có địa chỉ mặc định, lấy địa chỉ đầu tiên
+                datHangRequest.setMaDiaChi(diaChis.get(0).getMaDiaChi());
+            }
+            
+            // Fallback: nếu không có địa chỉ nào, sử dụng thông tin cũ
+            if (diaChis.isEmpty()) {
+                String defaultDiaChi2 = getDefaultAddress(nguoiDung);
+                datHangRequest.setDiaChiGiaoHang(defaultDiaChi2);
+                
+                String defaultSoDienThoai = getDefaultPhone(nguoiDung);
+                datHangRequest.setSoDienThoai(defaultSoDienThoai);
+            }
 
             // Thêm vào model
             model.addAttribute("productsByStore", productsByStore);
@@ -162,6 +180,7 @@ public class OrderController {
             model.addAttribute("gioHang", gioHang);
             model.addAttribute("nguoiDung", nguoiDung);
             model.addAttribute("datHangRequest", datHangRequest);
+            model.addAttribute("diaChis", diaChis); // Thêm danh sách địa chỉ
 
             return "web/order";
 
@@ -188,10 +207,23 @@ public class OrderController {
             }
             
          // Debug log để kiểm tra dữ liệu
+            System.out.println("Mã địa chỉ: " + datHangRequest.getMaDiaChi());
             System.out.println("Địa chỉ giao hàng: " + datHangRequest.getDiaChiGiaoHang());
             System.out.println("Số điện thoại: " + datHangRequest.getSoDienThoai());
             System.out.println("Ghi chú: " + datHangRequest.getGhiChu());
             System.out.println("Khuyến mãi đã chọn: " + datHangRequest.getSelectedPromotions());
+            
+            // Xử lý địa chỉ: nếu có maDiaChi, lấy thông tin từ địa chỉ đó
+            if (datHangRequest.getMaDiaChi() != null) {
+                DiaChi diaChi = diaChiService.findById(datHangRequest.getMaDiaChi())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ"));
+                
+                // Cập nhật thông tin địa chỉ và số điện thoại từ địa chỉ được chọn
+                datHangRequest.setDiaChiGiaoHang(diaChi.getDiaChiChiTiet());
+                datHangRequest.setSoDienThoai(diaChi.getSoDienThoai());
+                
+                System.out.println("Đã lấy địa chỉ từ mã: " + diaChi.getDiaChiChiTiet());
+            }
             
          // Xử lý số điện thoại: loại bỏ dấu cách
             if (datHangRequest.getSoDienThoai() != null) {

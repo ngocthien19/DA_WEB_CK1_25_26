@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.iotstar.entity.DiaChi;
 import vn.iotstar.entity.NguoiDung;
 import vn.iotstar.entity.OtpToken;
 import vn.iotstar.entity.VaiTro;
@@ -13,6 +14,7 @@ import vn.iotstar.model.OtpRequest;
 import vn.iotstar.repository.NguoiDungRepository;
 import vn.iotstar.repository.OtpTokenRepository;
 import vn.iotstar.repository.VaiTroRepository;
+import vn.iotstar.service.DiaChiService;
 import vn.iotstar.service.EmailService;
 import vn.iotstar.service.OtpService;
 
@@ -39,6 +41,9 @@ public class OtpServiceImpl implements OtpService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private DiaChiService diaChiService;
 
     private static final int OTP_LENGTH = 6;
     private static final int OTP_EXPIRY_MINUTES = 5;
@@ -140,7 +145,26 @@ public class OtpServiceImpl implements OtpService {
             nguoiDung.setVaiTro(userRole.get());
 
             // Lưu người dùng
-            nguoiDungRepository.save(nguoiDung);
+            NguoiDung savedUser = nguoiDungRepository.save(nguoiDung);
+            
+            // Tự động tạo địa chỉ mặc định từ thông tin đăng ký
+            if (otpToken.getDiaChi() != null && !otpToken.getDiaChi().trim().isEmpty() &&
+                otpToken.getSdt() != null && !otpToken.getSdt().trim().isEmpty()) {
+                try {
+                    DiaChi diaChiMacDinh = DiaChi.builder()
+                        .nguoiDung(savedUser)
+                        .tenNguoiNhan(otpToken.getTenNguoiDung())
+                        .soDienThoai(otpToken.getSdt())
+                        .diaChiChiTiet(otpToken.getDiaChi())
+                        .macDinh(true)
+                        .trangThai("Hoạt động")
+                        .build();
+                    diaChiService.save(diaChiMacDinh);
+                } catch (Exception e) {
+                    // Không làm gián đoạn quá trình đăng ký nếu tạo địa chỉ thất bại
+                    System.err.println("Lỗi khi tạo địa chỉ mặc định: " + e.getMessage());
+                }
+            }
 
             // Đánh dấu OTP đã sử dụng
             otpToken.setIsUsed(true);

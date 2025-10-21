@@ -202,6 +202,10 @@ function displayUserProfile(user) {
                             <i class="fas fa-user"></i>
                             <span>Thông tin cá nhân</span>
                         </div>
+                        <div class="nav-item" data-tab="addresses">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Địa chỉ nhận hàng</span>
+                        </div>
                         <div class="nav-item" data-tab="security">
                             <i class="fas fa-shield-alt"></i>
                             <span>Đổi mật khẩu</span>
@@ -272,6 +276,13 @@ function displayUserProfile(user) {
                         </form>
                     </div>
 
+                    <div class="profile-tab" id="addressesTab">
+                        <h2 class="section-title">Địa chỉ nhận hàng</h2>
+                        <div id="addressesContainer">
+                            <div class="loading-spinner">Đang tải...</div>
+                        </div>
+                    </div>
+
                     <div class="profile-tab" id="securityTab">
                         <h2 class="section-title">Đổi mật khẩu</h2>
                         <form id="passwordForm">
@@ -315,6 +326,48 @@ function displayUserProfile(user) {
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Modal thêm/sửa địa chỉ -->
+            <div id="addressModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="addressModalTitle">Thêm địa chỉ mới</h3>
+                        <button class="modal-close" onclick="closeAddressModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="addressForm" onsubmit="event.preventDefault(); saveAddress();">
+                        <input type="hidden" id="addressId">
+                        <div class="form-group">
+                            <label class="form-label">Tên người nhận *</label>
+                            <input type="text" class="form-input" id="tenNguoiNhan" required maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại *</label>
+                            <input type="tel" class="form-input" id="soDienThoaiAddress" 
+                                   pattern="^0[0-9]{9}$" required placeholder="0123456789">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Địa chỉ chi tiết *</label>
+                            <textarea class="form-input" id="diaChiChiTiet" rows="3" required maxlength="500"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="macDinh">
+                                <span>Đặt làm địa chỉ mặc định</span>
+                            </label>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Lưu
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="closeAddressModal()">
+                                <i class="fas fa-times"></i> Hủy
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         `;
@@ -394,6 +447,11 @@ function switchTab(tabName) {
     
     if (selectedNavItem) selectedNavItem.classList.add('active');
     if (selectedTab) selectedTab.classList.add('active');
+    
+    // Load addresses when switching to addresses tab
+    if (tabName === 'addresses') {
+        loadAddresses();
+    }
 }
 
 // Toggle edit mode
@@ -805,4 +863,216 @@ function hideToast(toast) {
             toast.parentNode.removeChild(toast);
         }
     }, 300);
+}
+
+// ============= QUẢN LÝ ĐỊA CHỈ =============
+let addresses = [];
+
+// Load addresses
+async function loadAddresses() {
+    const token = localStorage.getItem('jwtToken');
+    
+    try {
+        const response = await fetch('/profile/api/user/addresses', {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load addresses');
+
+        const result = await response.json();
+        if (result.success) {
+            addresses = result.data;
+            displayAddresses();
+        }
+    } catch (error) {
+        console.error('Error loading addresses:', error);
+        showNotification('Lỗi khi tải danh sách địa chỉ', 'error');
+    }
+}
+
+// Display addresses
+function displayAddresses() {
+    const container = document.getElementById('addressesContainer');
+    if (!container) return;
+
+    if (addresses.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>Bạn chưa có địa chỉ giao hàng nào</p>
+                <button class="btn btn-primary" onclick="showAddAddressModal()">
+                    <i class="fas fa-plus"></i> Thêm địa chỉ mới
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="addresses-list">';
+    addresses.forEach(addr => {
+        html += `
+            <div class="address-card ${addr.macDinh ? 'default' : ''}">
+                <div class="address-header">
+                    <h4>${escapeHtml(addr.tenNguoiNhan)}</h4>
+                    ${addr.macDinh ? '<span class="badge-default">Mặc định</span>' : ''}
+                </div>
+                <p class="address-phone"><i class="fas fa-phone"></i> ${escapeHtml(addr.soDienThoai)}</p>
+                <p class="address-detail"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(addr.diaChiChiTiet)}</p>
+                <div class="address-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editAddress(${addr.maDiaChi})">
+                        <i class="fas fa-edit"></i> Sửa
+                    </button>
+                    ${!addr.macDinh ? `
+                        <button class="btn btn-sm btn-success" onclick="setDefaultAddress(${addr.maDiaChi})">
+                            <i class="fas fa-star"></i> Đặt làm mặc định
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-danger" onclick="deleteAddress(${addr.maDiaChi})">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    html += `
+        <button class="btn btn-primary" onclick="showAddAddressModal()" style="margin-top: 20px;">
+            <i class="fas fa-plus"></i> Thêm địa chỉ mới
+        </button>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Show add address modal
+function showAddAddressModal() {
+    const modal = document.getElementById('addressModal');
+    document.getElementById('addressModalTitle').textContent = 'Thêm địa chỉ mới';
+    document.getElementById('addressForm').reset();
+    document.getElementById('addressId').value = '';
+    modal.style.display = 'flex';
+}
+
+// Edit address
+function editAddress(id) {
+    const addr = addresses.find(a => a.maDiaChi === id);
+    if (!addr) return;
+
+    document.getElementById('addressModalTitle').textContent = 'Chỉnh sửa địa chỉ';
+    document.getElementById('addressId').value = addr.maDiaChi;
+    document.getElementById('tenNguoiNhan').value = addr.tenNguoiNhan;
+    document.getElementById('soDienThoaiAddress').value = addr.soDienThoai;
+    document.getElementById('diaChiChiTiet').value = addr.diaChiChiTiet;
+    document.getElementById('macDinh').checked = addr.macDinh;
+    
+    document.getElementById('addressModal').style.display = 'flex';
+}
+
+// Save address
+async function saveAddress() {
+    const form = document.getElementById('addressForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const addressId = document.getElementById('addressId').value;
+    const data = {
+        tenNguoiNhan: document.getElementById('tenNguoiNhan').value.trim(),
+        soDienThoai: document.getElementById('soDienThoaiAddress').value.trim(),
+        diaChiChiTiet: document.getElementById('diaChiChiTiet').value.trim(),
+        macDinh: document.getElementById('macDinh').checked
+    };
+
+    const token = localStorage.getItem('jwtToken');
+    const url = addressId 
+        ? `/profile/api/user/addresses/${addressId}` 
+        : '/profile/api/user/addresses';
+    const method = addressId ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showToast('Thành công!', addressId ? 'Cập nhật địa chỉ thành công' : 'Thêm địa chỉ thành công', 'success');
+            closeAddressModal();
+            loadAddresses();
+        } else {
+            showToast('Lỗi!', result.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        console.error('Error saving address:', error);
+        showToast('Lỗi!', 'Lỗi khi lưu địa chỉ', 'error');
+    }
+}
+
+// Set default address
+async function setDefaultAddress(id) {
+    const token = localStorage.getItem('jwtToken');
+    
+    try {
+        const response = await fetch(`/profile/api/user/addresses/${id}/set-default`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showToast('Thành công!', 'Đặt địa chỉ mặc định thành công', 'success');
+            loadAddresses();
+        } else {
+            showToast('Lỗi!', result.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        console.error('Error setting default address:', error);
+        showToast('Lỗi!', 'Lỗi khi đặt địa chỉ mặc định', 'error');
+    }
+}
+
+// Delete address
+async function deleteAddress(id) {
+    if (!confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
+
+    const token = localStorage.getItem('jwtToken');
+    
+    try {
+        const response = await fetch(`/profile/api/user/addresses/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showToast('Thành công!', 'Xóa địa chỉ thành công', 'success');
+            loadAddresses();
+        } else {
+            showToast('Lỗi!', result.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting address:', error);
+        showToast('Lỗi!', 'Lỗi khi xóa địa chỉ', 'error');
+    }
+}
+
+// Close address modal
+function closeAddressModal() {
+    document.getElementById('addressModal').style.display = 'none';
+    document.getElementById('addressForm').reset();
 }
