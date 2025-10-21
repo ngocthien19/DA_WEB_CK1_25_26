@@ -103,8 +103,8 @@ public class HomeController {
                 .collect(Collectors.toList());
 
         for (DanhMuc danhMuc : danhMucs) {
-            // CHỈ lấy sản phẩm đang hoạt động và từ cửa hàng đang hoạt động
-            List<SanPham> sanPhams = sanPhamService.findTop4ByDanhMucAndTrangThaiTrueOrderByNgayNhapDesc(danhMuc).stream()
+            // Lấy sản phẩm bán chạy (số lượng đã bán > 10), sắp xếp từ cao đến thấp
+            List<SanPham> sanPhams = sanPhamService.findTop4BestSellingProductsByDanhMuc(danhMuc).stream()
                     .filter(sanPham -> 
                         sanPham.getTrangThai() != null && sanPham.getTrangThai() && 
                         sanPham.getCuaHang() != null && sanPham.getCuaHang().getTrangThai() != null && 
@@ -347,7 +347,7 @@ public class HomeController {
     public String productList(
             @PathVariable("tenDanhMuc") String tenDanhMuc,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) List<String> price,
             @RequestParam(required = false) List<String> store,
             @RequestParam(required = false) List<String> loai,
@@ -468,7 +468,7 @@ public class HomeController {
     @GetMapping("/products")
     public String allProducts(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) List<String> price,
             @RequestParam(required = false) List<String> store,
             @RequestParam(required = false) List<String> loai,
