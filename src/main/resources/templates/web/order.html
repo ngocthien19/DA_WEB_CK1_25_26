@@ -163,6 +163,31 @@
                                       placeholder="Ghi chú cho đơn hàng (tùy chọn)"></textarea>
                         </div>
                         
+                        <!-- Phương thức vận chuyển -->
+                        <div class="form-group">
+                            <label for="shippingMethod">Phương thức vận chuyển *</label>
+                            <select id="shippingMethod" 
+                                    th:field="*{maPhuongThuc}" 
+                                    class="form-control shipping-select"
+                                    required>
+                                <option value="">-- Chọn phương thức vận chuyển --</option>
+                                <option th:each="method : ${shippingMethods}" 
+                                        th:value="${method.maPhuongThuc}"
+                                        th:data-fee="${method.phiVanChuyen}"
+                                        th:text="${method.tenNhaVanChuyen + ' - ' + 
+                                                 #numbers.formatDecimal(method.phiVanChuyen, 0, 'COMMA', 0, 'POINT') + 'đ' +
+                                                 (method.thoiGianGiaoHangDuKien != null ? ' (' + method.thoiGianGiaoHangDuKien + ')' : '')}">
+                                    Giao hàng nhanh - 30,000đ (1-2 ngày)
+                                </option>
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Phí vận chuyển sẽ được cộng vào tổng tiền
+                            </small>
+                            <div th:if="${#lists.isEmpty(shippingMethods)}" class="alert alert-warning mt-2">
+                                <i class="fas fa-exclamation-triangle"></i> Hiện chưa có phương thức vận chuyển nào. Vui lòng liên hệ quản trị viên.
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
 						    <label>Phương thức thanh toán *</label>
 						    <div class="payment-methods">
@@ -237,9 +262,9 @@
                             </div>
                             
                             <div class="fee-section">
-                                <div class="fee-row free">
+                                <div class="fee-row">
                                     <span>Phí vận chuyển</span>
-                                    <span>Miễn phí</span>
+                                    <span id="shippingFeeAmount">₫0</span>
                                 </div>
                             </div>
                             
@@ -288,8 +313,20 @@
         console.log('=== INITIALIZING ORDER PAGE ===');
         initStoreData();
         initPromotionSelects();
+        initShippingMethodListener();
         calculateOrderTotal();
     });
+    
+    // Khởi tạo event listener cho phương thức vận chuyển
+    function initShippingMethodListener() {
+        const shippingSelect = document.getElementById('shippingMethod');
+        if (shippingSelect) {
+            shippingSelect.addEventListener('change', function() {
+                console.log('Shipping method changed');
+                calculateOrderTotal();
+            });
+        }
+    }
     
     // Khởi tạo dữ liệu cửa hàng
     function initStoreData() {
@@ -429,20 +466,37 @@
             }
         });
         
-        // Cập nhật giao diện
-        updateOrderSummary(subtotal, grandTotal, totalDiscount, appliedPromotions);
+        // Tính phí vận chuyển
+        let shippingFee = 0;
+        const shippingSelect = document.getElementById('shippingMethod');
+        if (shippingSelect && shippingSelect.value) {
+            const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
+            shippingFee = parseFloat(selectedOption.getAttribute('data-fee')) || 0;
+        }
         
-        console.log('Order Summary:', { subtotal, grandTotal, totalDiscount, appliedPromotions });
+        // Cộng phí vận chuyển vào tổng tiền
+        grandTotal += shippingFee;
+        
+        // Cập nhật giao diện
+        updateOrderSummary(subtotal, grandTotal, totalDiscount, appliedPromotions, shippingFee);
+        
+        console.log('Order Summary:', { subtotal, grandTotal, totalDiscount, shippingFee, appliedPromotions });
     }
     
     // Cập nhật hiển thị tổng đơn hàng
-    function updateOrderSummary(subtotal, grandTotal, totalDiscount, appliedPromotions) {
+    function updateOrderSummary(subtotal, grandTotal, totalDiscount, appliedPromotions, shippingFee) {
         // Cập nhật tổng tiền
         const subtotalElement = document.getElementById('subtotal');
         const grandTotalElement = document.getElementById('grandTotal');
         
         if (subtotalElement) subtotalElement.textContent = formatCurrency(subtotal);
         if (grandTotalElement) grandTotalElement.textContent = formatCurrency(grandTotal);
+        
+        // Hiển thị phí vận chuyển
+        const shippingFeeElement = document.getElementById('shippingFeeAmount');
+        if (shippingFeeElement) {
+            shippingFeeElement.textContent = formatCurrency(shippingFee);
+        }
         
         // Hiển thị khuyến mãi áp dụng
         const promotionAppliedElement = document.getElementById('promotionApplied');

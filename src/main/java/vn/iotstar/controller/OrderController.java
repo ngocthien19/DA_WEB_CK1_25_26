@@ -48,6 +48,9 @@ public class OrderController {
     @Autowired
     private DiaChiService diaChiService;
     
+    @Autowired
+    private PhuongThucVanChuyenService phuongThucVanChuyenService;
+    
     @GetMapping("/qr-payment")
     public String showQRPayment(@RequestParam Integer orderId, 
                               @RequestParam String method,
@@ -181,6 +184,10 @@ public class OrderController {
             model.addAttribute("nguoiDung", nguoiDung);
             model.addAttribute("datHangRequest", datHangRequest);
             model.addAttribute("diaChis", diaChis); // Thêm danh sách địa chỉ
+            
+            // Thêm danh sách phương thức vận chuyển
+            List<PhuongThucVanChuyen> phuongThucVanChuyens = phuongThucVanChuyenService.findActiveShippingMethods();
+            model.addAttribute("shippingMethods", phuongThucVanChuyens);
 
             return "web/order";
 
