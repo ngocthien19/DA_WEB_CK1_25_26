@@ -339,4 +339,10 @@ public class SanPhamServiceImpl implements SanPhamService {
     public Page<SanPham> findTopRatedProductsByCategory(DanhMuc danhMuc, Pageable pageable) {
         return sanPhamRepository.findByDanhMucAndTrangThaiTrueAndCuaHangTrangThaiTrueOrderBySaoDanhGiaDesc(danhMuc, pageable);
     }
+    
+    @Override
+    public List<SanPham> findTop4BestSellingProductsByDanhMuc(DanhMuc danhMuc) {
+        Pageable pageable = PageRequest.of(0, 4);
+        return sanPhamRepository.findTop4ByDanhMucAndTrangThaiTrueAndSoLuongDaBanGreaterThan10OrderBySoLuongDaBanDesc(danhMuc, pageable);
+    }
 }
