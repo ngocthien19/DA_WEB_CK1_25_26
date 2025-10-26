@@ -45,6 +45,15 @@ public class OrderController {
     @Autowired
     private QRCodeService qrCodeService;
     
+<<<<<<< Updated upstream
+=======
+    @Autowired
+    private DiaChiService diaChiService;
+    
+    @Autowired
+    private PhuongThucVanChuyenService phuongThucVanChuyenService;
+    
+>>>>>>> Stashed changes
     @GetMapping("/qr-payment")
     public String showQRPayment(@RequestParam Integer orderId, 
                               @RequestParam String method,
@@ -162,6 +171,14 @@ public class OrderController {
             model.addAttribute("gioHang", gioHang);
             model.addAttribute("nguoiDung", nguoiDung);
             model.addAttribute("datHangRequest", datHangRequest);
+<<<<<<< Updated upstream
+=======
+            model.addAttribute("diaChis", diaChis); // Thêm danh sách địa chỉ
+            
+            // Thêm danh sách phương thức vận chuyển
+            List<PhuongThucVanChuyen> phuongThucVanChuyens = phuongThucVanChuyenService.findActiveShippingMethods();
+            model.addAttribute("shippingMethods", phuongThucVanChuyens);
+>>>>>>> Stashed changes
 
             return "web/order";
 
