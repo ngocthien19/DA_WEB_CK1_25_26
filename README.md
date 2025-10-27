@@ -409,31 +409,6 @@ graph LR
 
 </details>
 
-#### ⚠️ Xử lý sự cố
-
-<details>
-<summary><b>🚨 Sự cố thường gặp</b></summary>
-
-<div align="center">
-
-| Sự cố | Cách xử lý | Liên hệ hỗ trợ |
-|-------|------------|----------------|
-| Hàng hư hỏng | 📞 Gọi ngay cho cửa hàng | ☎️ Hotline kho |
-| Địa chỉ không tồn tại | 🗺️ Kiểm tra lại tọa độ | 💬 Support địa chỉ |
-| KH không có nhà | ⏰ Hẹn giao lại | 📱 Nhắn tin KH |
-| Phương tiện hỏng | 🚗 Báo ngay cho quản lý | 🔧 Đội kỹ thuật |
-
-</div>
-
-> 🆘 **Trường hợp khẩn cấp:**
-> - Gọi ngay 113 nếu có tình huống nguy hiểm
-> - Báo ngay cho quản lý vận chuyển
-> - Ưu tiên an toàn cá nhân
-
-</details>
-
-</details>
-
 ### 👨‍💼 Chủ cửa hàng (VENDOR)
 
 <details>
@@ -506,8 +481,6 @@ graph LR
 
 </details>
 
-Chắc chắn rồi, đây là nội dung Quản lý đánh giá được trình bày theo format bạn yêu cầu:
-
 #### ⭐ Quản lý đánh giá
 
 <div align="center">
@@ -537,8 +510,6 @@ graph LR
 ```
 
 </details>
-
-Chắc chắn rồi, đây là nội dung Quản lý khuyến mãi được trình bày theo format bạn yêu cầu:
 
 #### 🎯 Quản lý khuyến mãi
 
@@ -577,8 +548,6 @@ graph LR
 ```
 
 </details>
-
-Chắc chắn rồi, đây là nội dung Lịch sử bán hàng được trình bày theo format bạn yêu cầu:
 
 #### 📊 Lịch sử bán hàng
 
@@ -651,8 +620,6 @@ graph TD
 
 </div>
 
-Chắc chắn rồi, đây là nội dung Quản lý danh mục được trình bày theo format bạn yêu cầu:
-
 #### 📂 Quản lý danh mục
 
 <div align="center">
@@ -685,8 +652,6 @@ graph LR
 ```
 
 </details>
-
-Chắc chắn rồi! Dưới đây là nội dung Quản lý sản phẩm đã được chỉnh sửa để phù hợp hơn với quyền quản trị toàn diện cho các cửa hàng.
 
 #### 🛍️ Quản lý sản phẩm (Toàn quyền)
 
@@ -724,8 +689,6 @@ graph LR
 ```
 
 </details>
-
-Chắc chắn rồi! Dưới đây là nội dung Quản lý người dùng đã được chỉnh sửa để đầy đủ và chi tiết hơn.
 
 #### 👥 Quản lý người dùng
 
