@@ -19,7 +19,7 @@ Chào mừng bạn đến với ứng dụng Pet Shop! 🎉
 | Vai trò | Mô tả |
 |---------|--------|
 | 👤 Khách hàng (USER) | Người dùng cuối, thực hiện mua sắm và quản lý đơn hàng |
-|  Người giao hàng (SHIPPER) | Xác nhận đơn hàng và cập nhật trạng thái đơn hàng |
+| 👨‍💼 Người giao hàng (SHIPPER) | Xác nhận đơn hàng và cập nhật trạng thái đơn hàng |
 | 👨‍💼 Chủ cửa hàng (VENDOR) | Xử lý đơn hàng và hỗ trợ khách hàng |
 | 👨‍💻 Quản trị viên (ADMIN) | Quản lý toàn bộ hệ thống và phân quyền |
 
