@@ -1102,32 +1102,6 @@ stateDiagram-v2
 > - 📱 Push notification
 > - 💰 Xử lý hoàn tiền
 
-### ⚠️ Quy trình xử lý khiếu nại
-
-<div align="center">
-
-```mermaid
-sequenceDiagram
-    participant C as Khách hàng
-    participant S as Nhân viên
-    participant A as Admin
-    
-    C->>S: Tạo khiếu nại
-    Note over C,S: Đính kèm hình ảnh & lý do
-    S->>S: Kiểm tra thông tin
-    S->>A: Đề xuất giải pháp
-    A->>S: Phê duyệt/Từ chối
-    S->>C: Phản hồi khách hàng
-    alt Đồng ý hoàn tiền
-        A->>S: Duyệt hoàn tiền
-        S->>C: Xử lý hoàn tiền
-    else Từ chối hoàn tiền
-        S->>C: Giải thích lý do
-    end
-```
-
-</div>
-
 ### 🔒 Bảo mật và quyền hạn
 
 <details>
