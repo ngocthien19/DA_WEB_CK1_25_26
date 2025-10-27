@@ -19,7 +19,8 @@ Chào mừng bạn đến với ứng dụng Pet Shop! 🎉
 | Vai trò | Mô tả |
 |---------|--------|
 | 👤 Khách hàng (USER) | Người dùng cuối, thực hiện mua sắm và quản lý đơn hàng |
-| 👨‍💼 Nhân viên (STAFF) | Xử lý đơn hàng và hỗ trợ khách hàng |
+|  Người giao hàng (SHIPPER) | Xác nhận đơn hàng và cập nhật trạng thái đơn hàng |
+| 👨‍💼 Chủ cửa hàng (VENDOR) | Xử lý đơn hàng và hỗ trợ khách hàng |
 | 👨‍💻 Quản trị viên (ADMIN) | Quản lý toàn bộ hệ thống và phân quyền |
 
 ## 📚 Hướng dẫn sử dụng chi tiết theo vai trò
@@ -94,7 +95,7 @@ graph TD
 
 - 🏠 Lướt trang chủ
 - 🔎 Sử dụng thanh tìm kiếm thông minh
-- 📑 Lọc theo danh mục
+- 📑 Lọc theo danh mục, lọc theo (bán chạy/yêu thích/đánh giá)
 - ⚡ Sắp xếp linh hoạt (giá/tên/mới nhất)
 
 </details>
@@ -143,25 +144,24 @@ graph LR
 graph TD
     A[Bắt đầu thanh toán] --> B{Chọn phương thức}
     B -->|COD| C[Thanh toán khi nhận hàng]
-    B -->|VNPay| D[Thanh toán qua VNPay]
-    B -->|MoMo| E[Thanh toán qua MoMo]
-    C --> F[Xác nhận đơn hàng]
-    D --> G[Chuyển cổng thanh toán]
-    G --> H[Nhập thông tin thẻ]
-    H --> I[Xác nhận OTP]
-    E --> J[Quét mã QR]
-    J --> K[Xác nhận trên ứng dụng]
-    I --> F
-    K --> F
-    F --> L[Hoàn tất đặt hàng]
+    B -->|Chuyển khoản| D[Thanh toán qua VietQR]
+    
+    C --> E[Xác nhận đơn hàng]
+    
+    D --> F[Hiển thị mã QR]
+    F --> G[Quét mã bằng App Ngân hàng]
+    G --> H[Xác nhận thanh toán trong app]
+    H --> I[Nhận kết quả thành công]
+    
+    I --> E
+    E --> J[Hoàn tất đặt hàng]
 ```
 
 </div>
 
 > 💡 **Lưu ý về thanh toán:**
 > - 🏠 **COD**: Thanh toán khi nhận hàng tại địa chỉ
-> - 💳 **VNPay**: Thanh toán bằng thẻ ATM/Credit Card
-> - 📱 **MoMo**: Thanh toán qua ví điện tử MoMo
+> - 💳 **VietQR**: Thanh toán bằng cách quét mã QR
 
 #### 📦 Quản lý đơn hàng
 
@@ -181,7 +181,7 @@ graph TD
 <summary><b>📋 Chi tiết đơn hàng</b></summary>
 
 - 📝 Xem thông tin sản phẩm
-- 🔍 Theo dõi trạng thái realtime
+- 🔍 Theo dõi trạng thái 
 - 📅 Xem lịch sử giao hàng
 - 💬 Nhắn tin với shop
 
@@ -213,10 +213,10 @@ graph TD
 
 </details>
 
-### 👨‍💼 Nhân viên (STAFF)
+### 👨‍💻 Người giao hàng (SHIPPER)
 
 <details>
-<summary><b>📱 Xem hướng dẫn chi tiết cho nhân viên</b></summary>
+<summary><b>🚚 Xem hướng dẫn chi tiết cho shipper</b></summary>
 
 #### 🔐 Truy cập hệ thống
 
@@ -224,7 +224,228 @@ graph TD
 
 ```mermaid
 graph LR
-    A[Truy cập trang admin] -->|Đăng nhập| B[Xác thực]
+    A[Truy cập trang đăng nhập] -->|Đăng nhập| B[Xác thực tài khoản shipper]
+    B -->|Thành công| C[Dashboard shipper]
+    B -->|Thất bại| D[Thông báo lỗi]
+    D --> A
+```
+
+</div>
+
+#### 📦 Quản lý đơn hàng được phân công
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách đơn | 📋 | Hiển thị đơn hàng được phân công giao |
+| Tìm kiếm đơn | 🔍 | Tìm theo mã đơn, tên KH, địa chỉ |
+| Lọc đơn hàng | ⚙️ | Lọc theo khu vực, trạng thái, ngày |
+| Xác nhận nhận đơn | ✅ | Xác nhận đã nhận hàng để giao |
+| Cập nhật trạng thái | 🔄 | Cập nhật tiến độ giao hàng |
+| Hủy đơn hàng | ❌ | Hủy đơn không thể giao được |
+| Xem chi tiết | 👁️ | Xem thông tin chi tiết đơn hàng |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình xử lý đơn hàng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem đơn được phân công] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Xác nhận nhận đơn]
+    C --> E[Cập nhật trạng thái]
+    C --> F[Hủy đơn hàng]
+    C --> G[Xem chi tiết đơn]
+    D --> H[Lưu thay đổi]
+    E --> H
+    F --> H
+```
+
+</details>
+
+#### 🚚 Quy trình giao hàng chi tiết
+
+<details>
+<summary><b>🔄 Cập nhật trạng thái đơn hàng</b></summary>
+
+<div align="center">
+
+| Trạng thái | Icon | Mô tả | Hành động |
+|------------|------|--------|-----------|
+| Đã nhận hàng | 📥 | Đã nhận hàng từ kho | Xác nhận với hệ thống |
+| Đang giao hàng | 🚚 | Đang trên đường giao | Cập nhật vị trí |
+| Đã đến nơi | 📍 | Đã đến địa chỉ giao | Thông báo cho KH |
+| Giao thành công | ✅ | Đã giao hàng thành công | Xác nhận hoàn tất |
+| Giao thất bại | ❌ | Không giao được | Ghi rõ lý do |
+
+</div>
+
+```mermaid
+graph TD
+    A[Đơn hàng mới] --> B[Xác nhận nhận hàng]
+    B --> C[Bắt đầu giao hàng]
+    C --> D[Cập nhật: Đang giao]
+    D --> E{Đến địa chỉ?}
+    E -->|Có| F[Thông báo cho KH]
+    E -->|Không| D
+    F --> G{KH có nhận?}
+    G -->|Có| H[Giao thành công]
+    G -->|Không| I[Giao thất bại]
+    H --> J[Xác nhận hoàn tất]
+    I --> K[Ghi lý do hủy]
+```
+
+</details>
+
+<details>
+<summary><b>❌ Quy trình hủy đơn hàng</b></summary>
+
+<div align="center">
+
+| Lý do hủy | Mô tả | Yêu cầu bổ sung |
+|-----------|-------|-----------------|
+| Địa chỉ sai | Không tìm thấy địa chỉ | 📍 Chụp ảnh địa chỉ thực tế |
+| KH không liên lạc | Không trả lời điện thoại | 📞 Ghi lại số lần gọi |
+| KH từ chối | KH không nhận hàng | 📝 Lý do từ chối |
+| Hàng hư hỏng | Sản phẩm bị vỡ/hỏng | 🖼️ Chụp ảnh minh chứng |
+| Thời tiết | Thời tiết bất lợi | 🌧️ Ghi rõ điều kiện |
+
+</div>
+
+```mermaid
+graph TD
+    A[Quyết định hủy đơn] --> B{Chọn lý do}
+    B --> C[Địa chỉ sai]
+    B --> D[KH không liên lạc]
+    B --> E[KH từ chối]
+    B --> F[Hàng hư hỏng]
+    B --> G[Thời tiết]
+    C --> H[Chụp ảnh địa chỉ]
+    D --> I[Ghi log cuộc gọi]
+    E --> J[Xác nhận lý do]
+    F --> K[Chụp ảnh sản phẩm]
+    G --> L[Mô tả điều kiện]
+    H --> M[Gửi yêu cầu hủy]
+    I --> M
+    J --> M
+    K --> M
+    L --> M
+```
+
+</details>
+
+#### 📱 Tính năng hỗ trợ shipper
+
+<details>
+<summary><b>🗺️ Hỗ trợ định vị và điều hướng</b></summary>
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem bản đồ | 🗺️ | Hiển thị vị trí khách hàng trên bản đồ |
+| Chỉ đường | 🧭 | Tích hợp Google Maps chỉ đường |
+| Lộ trình tối ưu | ⚡ | Gợi ý lộ trình giao hàng hiệu quả |
+| Đánh dấu đã giao | 📌 | Đánh dấu các điểm đã giao thành công |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>📞 Liên hệ khách hàng</b></summary>
+
+```mermaid
+graph TD
+    A[Cần liên hệ KH] --> B{Phương thức}
+    B --> C[Gọi điện]
+    B --> D[Nhắn tin SMS]
+    B --> E[Chat trong app]
+    C --> F[Ghi chú cuộc gọi]
+    D --> G[Mẫu tin nhắn có sẵn]
+    E --> H[Chat real-time]
+    F --> I[Lưu thông tin]
+    G --> I
+    H --> I
+```
+
+> 💡 **Mẫu tin nhắn tự động:**
+> - "Tôi là shipper, đang đến giao đơn hàng [MÃ ĐƠN]"
+> - "Tôi đã đến địa chỉ, xin gặp anh/chị để giao hàng"
+> - "Không liên lạc được, tôi sẽ quay lại sau 30 phút"
+
+</details>
+
+#### 📊 Báo cáo và thống kê
+
+<details>
+<summary><b>📈 Hiệu suất giao hàng</b></summary>
+
+<div align="center">
+
+| Chỉ số | Mô tả | Mục tiêu |
+|--------|-------|----------|
+| Số đơn giao/ngày | Tổng số đơn đã giao | > 20 đơn |
+| Tỷ lệ thành công | % đơn giao thành công | > 95% |
+| Thời gian trung bình | Thời gian giao mỗi đơn | < 45 phút |
+| Đánh giá KH | Điểm đánh giá từ KH | > 4.5/5 |
+
+</div>
+
+```mermaid
+graph LR
+    A[Thống kê ngày] --> B[Số đơn đã giao]
+    A --> C[Tỷ lệ thành công]
+    A --> D[Thời gian TB]
+    A --> E[Đánh giá KH]
+    B --> F[Báo cáo hiệu suất]
+    C --> F
+    D --> F
+    E --> F
+```
+
+</details>
+
+#### ⚠️ Xử lý sự cố
+
+<details>
+<summary><b>🚨 Sự cố thường gặp</b></summary>
+
+<div align="center">
+
+| Sự cố | Cách xử lý | Liên hệ hỗ trợ |
+|-------|------------|----------------|
+| Hàng hư hỏng | 📞 Gọi ngay cho cửa hàng | ☎️ Hotline kho |
+| Địa chỉ không tồn tại | 🗺️ Kiểm tra lại tọa độ | 💬 Support địa chỉ |
+| KH không có nhà | ⏰ Hẹn giao lại | 📱 Nhắn tin KH |
+| Phương tiện hỏng | 🚗 Báo ngay cho quản lý | 🔧 Đội kỹ thuật |
+
+</div>
+
+> 🆘 **Trường hợp khẩn cấp:**
+> - Gọi ngay 113 nếu có tình huống nguy hiểm
+> - Báo ngay cho quản lý vận chuyển
+> - Ưu tiên an toàn cá nhân
+
+</details>
+
+</details>
+
+### 👨‍💼 Chủ cửa hàng (VENDOR)
+
+<details>
+<summary><b>📱 Xem hướng dẫn chi tiết cho chủ cửa hàng</b></summary>
+
+#### 🔐 Truy cập hệ thống
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[Truy cập trang đăng nhập] -->|Đăng nhập| B[Xác thực]
     B -->|Thành công| C[Dashboard]
     B -->|Thất bại| D[Thông báo lỗi]
     D --> A
@@ -253,7 +474,7 @@ graph TD
     C -->|Đang giao| D[Cập nhật thông tin shipper]
     C -->|Đã giao| E[Xác nhận hoàn thành]
     C -->|Hoàn hàng| F[Xử lý hoàn trả]
-    D --> G[Theo dõi realtime]
+    D --> G[Theo dõi]
     E --> H[Hoàn tất đơn hàng]
     F --> I[Cập nhật kho]
 ```
@@ -281,6 +502,111 @@ graph LR
     C --> D[Cập nhật số lượng]
     D --> E[Quản lý ảnh]
     E --> F[Lưu thay đổi]
+```
+
+</details>
+
+Chắc chắn rồi, đây là nội dung Quản lý đánh giá được trình bày theo format bạn yêu cầu:
+
+#### ⭐ Quản lý đánh giá
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📝 | Hiển thị toàn bộ đánh giá từ khách hàng |
+| Tìm kiếm | 🔍 | Tìm theo tên khách hàng/sản phẩm |
+| Lọc thời gian | 📅 | Lọc đánh giá theo khoảng thời gian |
+| Tải file | 📁 | Tải xuống ảnh/video đính kèm |
+| Xóa đánh giá | 🗑️ | Xóa đánh giá không phù hợp |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý đánh giá</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C[Kiểm tra nội dung]
+    C --> D{Tác vụ}
+    D --> E[Tải ảnh/video]
+    D --> F[Xóa đánh giá]
+    E --> G[Hoàn tất]
+    F --> G
+```
+
+</details>
+
+Chắc chắn rồi, đây là nội dung Quản lý khuyến mãi được trình bày theo format bạn yêu cầu:
+
+#### 🎯 Quản lý khuyến mãi
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả chương trình khuyến mãi |
+| Thêm mới | ➕ | Tạo chương trình khuyến mãi mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin khuyến mãi |
+| Xóa | 🗑️ | Xóa chương trình khuyến mãi |
+| Tìm kiếm | 🔍 | Tìm theo mã khuyến mãi |
+| Lọc | 📊 | Lọc theo trạng thái, ngày áp dụng |
+| Nhập Excel | 📥 | Import danh sách khuyến mãi |
+| Xuất Excel | 📤 | Export dữ liệu ra file Excel |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý khuyến mãi</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Chi tiết]
+    C --> H[Nhập/Xuất Excel]
+    D --> I[Lưu thông tin]
+    E --> I
+    F --> I
+    H --> I
+    G --> B
+```
+
+</details>
+
+Chắc chắn rồi, đây là nội dung Lịch sử bán hàng được trình bày theo format bạn yêu cầu:
+
+#### 📊 Lịch sử bán hàng
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả đơn hàng đã bán |
+| Xuất Excel | 📤 | Export lịch sử đơn hàng ra file Excel |
+| Theo dõi doanh thu | 💰 | Thống kê doanh thu theo thời gian thực |
+| Tìm kiếm | 🔍 | Tìm kiếm đơn hàng theo mã, tên KH |
+| Lọc | ⚙️ | Lọc theo trạng thái, ngày tạo, khoảng giá |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý lịch sử bán hàng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách đơn hàng] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Xem chi tiết đơn]
+    C --> E[Xuất Excel]
+    C --> F[Theo dõi doanh thu]
+    D --> G[Cập nhật trạng thái]
+    E --> H[Lưu file]
+    F --> I[Xem báo cáo]
 ```
 
 </details>
@@ -325,163 +651,342 @@ graph TD
 
 </div>
 
-#### ⚙️ Cấu hình hệ thống
+Chắc chắn rồi, đây là nội dung Quản lý danh mục được trình bày theo format bạn yêu cầu:
+
+#### 📂 Quản lý danh mục
 
 <div align="center">
 
-| Cấu hình | Chức năng | Icon |
-|----------|-----------|------|
-| Thông tin shop | Cập nhật thông tin cửa hàng | 🏪 |
-| Email | Cấu hình SMTP, mẫu email | 📧 |
-| Thanh toán | Cài đặt VNPay, MoMo | 💳 |
-| Giao diện | Quản lý banner, slider | 🎨 |
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị tất cả danh mục sản phẩm |
+| Thêm mới | ➕ | Tạo danh mục sản phẩm mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin danh mục |
+| Xóa | 🗑️ | Xóa danh mục sản phẩm |
+| Tìm kiếm | 🔍 | Tìm kiếm danh mục theo tên |
 
 </div>
-
-#### 📁 Quản lý danh mục
-
-<div align="center">
-
-| Chức năng | Mô tả | Thao tác nhanh |
-|-----------|--------|----------------|
-| ➕ Thêm mới | Tạo danh mục mới | `Alt + N` |
-| 📝 Chỉnh sửa | Cập nhật thông tin | `Alt + E` |
-| 🗑️ Xóa | Xóa danh mục | `Alt + D` |
-| 📊 Sắp xếp | Điều chỉnh thứ tự | `Alt + S` |
-
-</div>
-
-```mermaid
-graph TD
-    A[Danh mục gốc] --> B[Danh mục con 1]
-    A --> C[Danh mục con 2]
-    B --> D[Danh mục cháu 1.1]
-    B --> E[Danh mục cháu 1.2]
-    C --> F[Danh mục cháu 2.1]
-```
-
-#### 🛍️ Quản lý sản phẩm (Full quyền)
 
 <details>
-<summary><b>✨ Thêm sản phẩm mới</b></summary>
-
-<div align="center">
-
-| Bước | Thông tin | Ghi chú |
-|------|-----------|----------|
-| 1️⃣ | Thông tin cơ bản | Tên, mã, danh mục |
-| 2️⃣ | Giá & Khuyến mãi | Giá bán, giá KM |
-| 3️⃣ | Hình ảnh | Tối đa 8 ảnh |
-| 4️⃣ | SEO | Meta title, description |
-
-</div>
-
-</details>
-
-<details>
-<summary><b>📦 Quản lý kho</b></summary>
+<summary><b>📝 Quy trình quản lý danh mục</b></summary>
 
 ```mermaid
 graph LR
-    A[Nhập hàng] --> B[Cập nhật kho]
-    B --> C[Kiểm kho]
-    C --> D[Báo cáo tồn]
-    D --> E[Cảnh báo hết hàng]
+    A[Xem danh sách] --> B[Tìm kiếm]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Xem chi tiết]
+    D --> H[Lưu thông tin]
+    E --> H
+    F --> H
+    G --> B
 ```
 
 </details>
 
-<details>
-<summary><b>💰 Quản lý giá & Khuyến mãi</b></summary>
+Chắc chắn rồi! Dưới đây là nội dung Quản lý sản phẩm đã được chỉnh sửa để phù hợp hơn với quyền quản trị toàn diện cho các cửa hàng.
 
-| Tính năng | Mô tả | Lịch trình |
-|-----------|--------|------------|
-| Giá cơ bản | Giá niêm yết | 24/7 |
-| Flash Sale | Giảm giá sốc | Theo giờ |
-| Combo | Mua nhiều giảm nhiều | Theo ngày |
-| Mùa vụ | Khuyến mãi theo mùa | Theo tháng |
+#### 🛍️ Quản lý sản phẩm (Toàn quyền)
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị toàn bộ sản phẩm |
+| Thêm mới | ➕ | Tạo sản phẩm hoàn toàn mới |
+| Chỉnh sửa | ✏️ | Cập nhật mọi thông tin sản phẩm |
+| Xóa | 🗑️ | Xóa vĩnh viễn sản phẩm |
+| Tìm kiếm | 🔍 | Tìm theo tên, mã SKU |
+| Lọc | ⚙️ | Lọc theo danh mục, trạng thái, kho |
+| Nhập Excel | 📥 | Import hàng loạt từ file Excel |
+| Xuất Excel | 📤 | Export dữ liệu sản phẩm ra Excel |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý sản phẩm</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Nhập/Xuất Excel]
+    C --> H[Xem chi tiết]
+    D --> I[Lưu thông tin]
+    E --> I
+    F --> I
+    G --> I
+```
 
 </details>
 
+Chắc chắn rồi! Dưới đây là nội dung Quản lý người dùng đã được chỉnh sửa để đầy đủ và chi tiết hơn.
+
 #### 👥 Quản lý người dùng
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị toàn bộ người dùng |
+| Thêm mới | ➕ | Tạo tài khoản người dùng mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin người dùng |
+| Xóa | 🗑️ | Xóa tài khoản người dùng |
+| Cấp quyền | 🔐 | Phân quyền truy cập hệ thống |
+| Cập nhật trạng thái | 🔄 | Kích hoạt/Khóa tài khoản |
+| Tìm kiếm | 🔍 | Tìm theo tên, email, SĐT |
+| Lọc | ⚙️ | Lọc theo vai trò, trạng thái |
+| Xuất Excel | 📤 | Export dữ liệu người dùng |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý người dùng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Cấp quyền]
+    C --> H[Cập nhật trạng thái]
+    C --> I[Xuất Excel]
+    D --> J[Lưu thông tin]
+    E --> J
+    F --> J
+    G --> J
+    H --> J
+```
+
+</details>
 
 <details>
 <summary><b>👤 Quản lý khách hàng</b></summary>
 
 <div align="center">
 
-| Chức năng | Thao tác | Phím tắt |
-|-----------|----------|----------|
-| 👀 Xem danh sách | Lọc & Tìm kiếm | `Ctrl + F` |
-| 🔒 Khóa tài khoản | Tạm khóa/Vĩnh viễn | `Ctrl + L` |
-| 🔑 Reset mật khẩu | Gửi email reset | `Ctrl + R` |
-| 📊 Thống kê | Phân tích hành vi | `Ctrl + A` |
+| Chức năng | Mô tả chi tiết | Trạng thái |
+|-----------|----------------|------------|
+| **Thông tin tài khoản** | Xem & chỉnh sửa profile, lịch sử mua hàng | Đang hoạt động |
+| **Quản lý trạng thái** | Kích hoạt/Khóa tài khoản vi phạm | Đã khóa |
+| **Lịch sử giao dịch** | Theo dõi đơn hàng, điểm tích lũy | Đang chờ xử lý |
 
 </div>
 
 </details>
 
-<details>
-<summary><b>👨‍💼 Quản lý nhân viên</b></summary>
-
-```mermaid
-graph TD
-    A[Thêm nhân viên mới] --> B[Cấp tài khoản]
-    B --> C[Phân quyền]
-    C --> D[Theo dõi hoạt động]
-    D --> E[Đánh giá hiệu suất]
-```
-
-#### 🔐 Phân quyền chi tiết
-
-| Module | STAFF | ADMIN |
-|--------|-------|-------|
-| Đơn hàng | ✅ | ✅ |
-| Sản phẩm | ⚡ | ✅ |
-| Khách hàng | ⚡ | ✅ |
-| Tài chính | ❌ | ✅ |
-| Cấu hình | ❌ | ✅ |
-
-> ✅ Full quyền | ⚡ Hạn chế | ❌ Không có quyền
-
-</details>
-
-#### 💰 Quản lý tài chính
+#### 📦 Quản lý đơn hàng
 
 <div align="center">
 
-| Báo cáo | Thời gian | Biểu đồ |
-|---------|-----------|----------|
-| 📈 Doanh thu | Ngày/Tuần/Tháng | Line chart |
-| 📊 Sản phẩm | Top bán chạy | Bar chart |
-| 💳 Thanh toán | Phương thức | Pie chart |
-| 🔄 Hoàn tiền | Theo trạng thái | Status chart |
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả đơn hàng theo phương thức thanh toán |
+| Tìm kiếm | 🔍 | Tìm theo mã đơn, tên KH, SĐT |
+| Lọc đơn hàng | ⚙️ | Lọc theo trạng thái, ngày tạo, phương thức |
+| Cập nhật trạng thái | 🔄 | Thay đổi trạng thái đơn hàng |
+| Theo dõi đơn hàng | 📱 | Xem lịch sử cập nhật và vị trí |
+| Xem chi tiết | 👁️ | Xem thông tin chi tiết đơn hàng |
 
 </div>
 
 <details>
-<summary><b>💹 Phân tích tài chính</b></summary>
+<summary><b>📝 Quy trình quản lý đơn hàng</b></summary>
 
 ```mermaid
 graph LR
-    A[Thu thập dữ liệu] --> B[Phân tích]
-    B --> C[Báo cáo]
-    C --> D[Dự báo]
-    D --> E[Đề xuất]
+    A[Xem danh sách đơn hàng] --> B[Lọc theo PT thanh toán]
+    B --> C{COD}
+    B --> D{VietQR}
+    C --> E[Tìm kiếm & Lọc]
+    D --> E
+    E --> F{Thao tác}
+    F --> G[Cập nhật trạng thái]
+    F --> H[Theo dõi đơn]
+    F --> I[Xem chi tiết]
+    G --> J[Lưu thay đổi]
+    H --> K[Hiển thị lộ trình]
 ```
 
-#### 📊 Các chỉ số quan trọng (KPIs)
+</details>
 
-| Chỉ số | Đơn vị | Xu hướng |
-|--------|---------|----------|
-| Doanh thu | VNĐ | 📈 |
-| Lợi nhuận | % | 📊 |
-| Đơn hàng | Số lượng | 📋 |
-| Khách hàng | Tăng trưởng | 👥 |
+<details>
+<summary><b>💰 Phân loại theo phương thức thanh toán</b></summary>
+
+<div align="center">
+
+| Phương thức | Icon | Trạng thái phổ biến | Xử lý |
+|-------------|------|---------------------|--------|
+| **COD** | 📦 | Chờ xác nhận, Đang giao, Thành công | Cập nhật trạng thái giao hàng |
+| **VietQR** | 💳 | Chờ thanh toán, Đã thanh toán, Đang giao | Xác nhận thanh toán tự động |
+
+</div>
 
 </details>
 
+<details>
+<summary><b>🔄 Vòng đời đơn hàng</b></summary>
+
+```mermaid
+graph TD
+    A[Đơn hàng mới] --> B{Xác nhận PT thanh toán}
+    B -->|COD| C[Chờ xác nhận]
+    B -->|VietQR| D[Chờ thanh toán]
+    D --> E[Đã thanh toán]
+    C --> F[Đã xác nhận]
+    E --> F
+    F --> G[Đang đóng gói]
+    G --> H[Đang giao hàng]
+    H --> I[Giao thành công]
+    H --> J[Giao thất bại]
+    I --> K[Hoàn tất]
+    J --> L[Đơn hủy]
+```
+
+#### ⭐ Quản lý đánh giá toàn hệ thống
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📝 | Hiển thị tất cả đánh giá từ mọi cửa hàng |
+| Tìm kiếm | 🔍 | Tìm theo tên KH, sản phẩm, cửa hàng |
+| Lọc đa điều kiện | ⚙️ | Lọc theo cửa hàng, sao, thời gian |
+| Tải file đính kèm | 📁 | Tải ảnh/video từ đánh giá |
+| Ẩn/Hiện đánh giá | 👁️ | Kiểm duyệt nội dung hiển thị |
+| Xóa đánh giá | 🗑️ | Xóa đánh giá vi phạm |
+| Phản hồi đánh giá | 💬 | Phản hồi đánh giá từ quản trị |
+| Xuất báo cáo | 📊 | Xuất Excel thống kê đánh giá |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý đánh giá</b></summary>
+
+```mermaid
+graph LR
+    A[Xem tất cả đánh giá] --> B[Lọc theo cửa hàng]
+    B --> C[Tìm kiếm đa điều kiện]
+    C --> D{Thao tác}
+    D --> E[Kiểm duyệt nội dung]
+    D --> F[Tải file đính kèm]
+    D --> G[Phản hồi đánh giá]
+    D --> H[Ẩn/Hiện đánh giá]
+    D --> I[Xóa đánh giá]
+    D --> J[Xuất báo cáo]
+    E --> K[Lưu thay đổi]
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    J --> K
+```
+
 </details>
+
+<details>
+<summary><b>🏪 Phân loại theo cửa hàng</b></summary>
+
+<div align="center">
+
+| Tiêu chí | Mô tả | Thao tác |
+|----------|-------|----------|
+| **Lọc cửa hàng** | Chọn 1 hoặc nhiều cửa hàng | Dropdown đa chọn |
+| **Đánh giá theo sao** | 1-5 sao, có thể lọc theo khoảng | ⭐⭐⭐⭐⭐ |
+| **Trạng thái hiển thị** | Đang hiển thị, Đã ẩn | Badge màu |
+| **Thời gian** | Theo ngày, tuần, tháng, quý | Date picker |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>🛡️ Quy trình kiểm duyệt</b></summary>
+
+```mermaid
+graph TD
+    A[Đánh giá mới từ cửa hàng] --> B{Kiểm tra nội dung}
+    B -->|Hợp lệ| C[Hiển thị công khai]
+    B -->|Vi phạm| D[Ẩn hoặc xóa]
+    C --> E[Gửi thông báo cho KH]
+    D --> F[Lưu nhật ký kiểm duyệt]
+```
+#### 🚚 Quản lý vận chuyển
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị tất cả dịch vụ vận chuyển |
+| Thêm mới | ➕ | Thêm dịch vụ vận chuyển mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin vận chuyển |
+| Xóa | 🗑️ | Xóa dịch vụ vận chuyển |
+| Tìm kiếm | 🔍 | Tìm theo tên dịch vụ, nhà cung cấp |
+| Sắp xếp | 📊 | Sắp xếp theo tên, phí vận chuyển |
+| Xem chi tiết | 📋 | Xem thông tin chi tiết dịch vụ |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý vận chuyển</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm]
+    B --> C[Sắp xếp]
+    C --> D{Thao tác}
+    D --> E[Thêm mới]
+    D --> F[Chỉnh sửa]
+    D --> G[Xóa]
+    D --> H[Xem chi tiết]
+    E --> I[Lưu thông tin]
+    F --> I
+    G --> I
+    H --> B
+```
+
+</details>
+
+<details>
+<summary><b>📦 Thông tin dịch vụ vận chuyển</b></summary>
+
+<div align="center">
+
+| Thông tin | Mô tả | Bắt buộc |
+|-----------|-------|----------|
+| **Tên dịch vụ** | Tên nhà vận chuyển (GHTK, GHN, Viettel Post...) | ✅ |
+| **Phí vận chuyển** | Chi phí cho mỗi đơn hàng | ✅ |
+| **Thời gian giao** | Số ngày dự kiến giao hàng | ✅ |
+| **Khu vực áp dụng** | Phạm vi giao hàng (Toàn quốc/Từng khu vực) | ✅ |
+| **Trạng thái** | Đang hoạt động/Tạm dừng | ✅ |
+| **Mô tả** | Thông tin bổ sung về dịch vụ | ❌ |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>💰 Sắp xếp theo chi phí</b></summary>
+
+```mermaid
+graph TD
+    A[Danh sách vận chuyển] --> B{Sắp xếp theo}
+    B --> C[Phí tăng dần]
+    B --> D[Phí giảm dần]
+    B --> E[Tên A-Z]
+    B --> F[Tên Z-A]
+    C --> G[Hiển thị kết quả]
+    D --> G
+    E --> G
+    F --> G
+```
 
 ## Yêu cầu hệ thống
 - Java Development Kit (JDK) 8 trở lên
@@ -492,12 +997,12 @@ graph LR
 ## Cài đặt và Chạy ứng dụng
 
 ### 1. Cấu hình Database
-1. Tạo database `DTA_PET` trong SQL Server
+1. Tạo database trong SQL Server
 2. Cập nhật thông tin kết nối database trong file `application.properties`:
    ```properties
-   spring.datasource.url=jdbc:sqlserver://[YOUR_SERVER_NAME]:1433;databaseName=DTA_PET
+   spring.datasource.url=jdbc:sqlserver://[YOUR_SERVER_NAME]:1433;databaseName=[YOUR_DATA]
    spring.datasource.username=sa
-   spring.datasource.password=123456
+   spring.datasource.password=[YOUR_PASS]
    ```
 
 ### 2. Chạy ứng dụng
@@ -532,17 +1037,11 @@ graph LR
 - Đặt hàng và chọn phương thức thanh toán
 
 ### 4. Thanh toán
-#### Thanh toán qua VNPay
-1. Chọn phương thức thanh toán VNPay
-2. Điền thông tin thanh toán
-3. Được chuyển đến cổng thanh toán VNPay
+#### Thanh toán qua VietQR
+1. Chọn phương thức thanh toán VietQR
+2. Xem chi tiết hóa đơn thanh toán
+3. Được chuyển đến cổng thanh toán VietQR
 4. Hoàn tất thanh toán và chờ redirect về trang callback
-
-#### Thanh toán qua MoMo
-1. Chọn phương thức thanh toán MoMo
-2. Quét mã QR hoặc sử dụng ứng dụng MoMo
-3. Xác nhận thanh toán trên ứng dụng MoMo
-4. Chờ callback để xác nhận trạng thái thanh toán
 
 ### 5. Quản lý đơn hàng
 - Xem lịch sử đơn hàng
@@ -554,8 +1053,22 @@ graph LR
 - Quản lý sản phẩm (thêm, sửa, xóa)
 - Quản lý đơn hàng
 - Quản lý người dùng
+- Quản lý đánh giá
+- Quản lý vận chuyển
 - Xem thống kê và báo cáo
 
+### 7. Tính năng Vendor
+- Quản lý sản phẩm (thêm, sửa, xóa)
+- Quản lý đơn hàng
+- Quản lý đánh giá
+- Quản lý khuyến mãi
+- Tương tác với người dùng
+- Xem thống kê và báo cáo
+
+### 8. Tính năng Shipper
+- Xác nhận đơn hàng
+- Cập nhật trạng thái đơn hàng
+  
 ## Upload Files
 - Hỗ trợ upload ảnh sản phẩm
 - Giới hạn kích thước file: 10MB
