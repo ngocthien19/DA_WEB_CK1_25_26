@@ -117,7 +117,8 @@
                                                        th:value="${matHang.soLuongDat}" 
                                                        min="1" 
                                                        th:max="${matHang.sanPham.soLuongConLai}"
-                                                       readonly>
+                                                       onchange="onQuantityInputChange(this)"
+                                                       oninput="validateQuantityInput(this)">
                                                 <button class="btn-increase" onclick="increaseQuantity(this)">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </button>
@@ -170,7 +171,7 @@
                         </div>
                         
                         <div class="summary-actions">
-                            <button class="btn-checkout">
+                            <button class="btn-checkout" onclick="proceedToCheckout(event)">
                                 <i class="fa-solid fa-credit-card"></i>
                                 Xem chi tiết đơn hàng
                             </button>
