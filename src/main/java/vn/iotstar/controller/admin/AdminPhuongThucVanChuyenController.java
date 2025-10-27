@@ -50,7 +50,15 @@ public class AdminPhuongThucVanChuyenController {
         NguoiDung user = getCurrentUser(authentication);
         model.addAttribute("user", user);
         
+<<<<<<< HEAD
         // Tạo Sort object với xử lý đặc biệt
+=======
+<<<<<<< HEAD
+        // Tạo Sort object với xử lý đặc biệt
+=======
+        // Tạo Sort object
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
         Sort sort = createSort(sortBy, sortDir);
         Pageable pageable = PageRequest.of(page, size, sort);
         
@@ -66,7 +74,15 @@ public class AdminPhuongThucVanChuyenController {
         model.addAttribute("shippingMethodPage", shippingMethodPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("sortBy", sortBy);
+<<<<<<< HEAD
         model.addAttribute("sortDir", sortDir);	
+=======
+<<<<<<< HEAD
+        model.addAttribute("sortDir", sortDir);	
+=======
+        model.addAttribute("sortDir", sortDir);
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
         model.addAttribute("activeCount", phuongThucVanChuyenService.countActiveShippingMethods());
         model.addAttribute("totalCount", shippingMethodPage.getTotalElements());
         
@@ -213,6 +229,10 @@ public class AdminPhuongThucVanChuyenController {
     }
 
     private Sort createSort(String sortBy, String sortDir) {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
         // Xử lý trường hợp đặc biệt: phiVanChuyen_desc
         String actualSortBy = sortBy;
         String actualSortDir = sortDir;
@@ -235,10 +255,32 @@ public class AdminPhuongThucVanChuyenController {
         } else {
             return Sort.by(actualSortBy).ascending();
         }
+<<<<<<< HEAD
+=======
+=======
+        String actualSortDir = "desc".equalsIgnoreCase(sortDir) ? "desc" : "asc";
+        
+        if (sortBy == null || sortBy.trim().isEmpty()) {
+            sortBy = "thuTu";
+            actualSortDir = "asc";
+        }
+        
+        return "desc".equalsIgnoreCase(actualSortDir) ? 
+            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     }
 
     private Page<PhuongThucVanChuyen> searchShippingMethods(String keyword, Pageable pageable) {
         // Tìm kiếm theo tên nhà vận chuyển
         return phuongThucVanChuyenService.searchByTenNhaVanChuyen(keyword, pageable);
     }
+<<<<<<< HEAD
 }
+=======
+<<<<<<< HEAD
+}
+=======
+}
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a

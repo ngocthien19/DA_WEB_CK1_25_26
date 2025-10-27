@@ -22,6 +22,24 @@
                 <div th:replace="~{admin/fragments/header :: header}"></div>
 
                 <div class="stats-container">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+                    <!-- Alert Messages -->
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                     <!-- Search Box -->
                     <div class="search-box">
                         <form th:action="@{/admin/shipping-methods}" method="get" class="row g-3">
@@ -46,6 +64,10 @@
                     </div>
 
                     <!-- Filter Section -->
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
 					<div class="filter-section">
 					    <h6 class="filter-title">
 					        <i class="fas fa-filter"></i>
@@ -111,6 +133,50 @@
                         <button type="button" class="btn btn-bulk-delete" onclick="showBulkDeleteModal()">
                             <i class="fas fa-trash me-1"></i>Xóa đã chọn
                         </button>
+<<<<<<< HEAD
+=======
+=======
+                    <div class="filter-section">
+                        <h6 class="filter-title">
+                            <i class="fas fa-filter"></i>
+                            Bộ lọc & Sắp xếp
+                            <span class="filter-badge" th:text="${shippingMethodPage.totalElements}">0</span>
+                        </h6>
+                        
+                        <form th:action="@{/admin/shipping-methods}" method="get" class="row g-3 align-items-end">
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Sắp xếp theo</label>
+                                <select class="form-select" name="sortBy" onchange="this.form.submit()">
+                                    <option value="thuTu" th:selected="${sortBy == 'thuTu'}">Thứ tự hiển thị (tăng dần)</option>
+                                    <option value="tenNhaVanChuyen" th:selected="${sortBy == 'tenNhaVanChuyen'}">Tên nhà vận chuyển (A-Z)</option>
+                                    <option value="phiVanChuyen" th:selected="${sortBy == 'phiVanChuyen'}">Phí vận chuyển (thấp → cao)</option>
+                                    <option value="phiVanChuyen_desc" th:selected="${sortBy == 'phiVanChuyen' && sortDir == 'desc'}">Phí vận chuyển (cao → thấp)</option>
+                                    <option value="trangThai" th:selected="${sortBy == 'trangThai'}">Trạng thái</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <a th:href="@{/admin/shipping-methods}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times me-2"></i>Xóa bộ lọc
+                                </a>
+                            </div>
+                        </form>
+                        
+                        <!-- Active Filters -->
+                        <div th:if="${keyword != null and keyword != ''}" class="mt-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-primary">
+                                    Tìm kiếm: <span th:text="${keyword}"></span>
+                                    <a th:href="@{/admin/shipping-methods}" class="text-white ms-2">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                     </div>
                     
                     <!-- Table Container -->
@@ -130,6 +196,10 @@
                         </div>
                         
                         <div class="table-responsive">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                             <table class="table shipping-methods-table">
                                 <thead>
                                     <tr>
@@ -146,10 +216,30 @@
                                         <th style="width: 8%;">Thứ tự</th>
                                         <th style="width: 10%;">Trạng thái</th>
                                         <th style="width: 12%;">Thao tác</th>
+<<<<<<< HEAD
+=======
+=======
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;">ID</th>
+                                        <th style="width: 20%;">Tên nhà vận chuyển</th>
+                                        <th style="width: 30%;">Mô tả</th>
+                                        <th style="width: 12%;">Phí vận chuyển</th>
+                                        <th style="width: 15%;">Thời gian dự kiến</th>
+                                        <th style="width: 8%;">Thứ tự</th>
+                                        <th style="width: 10%;">Trạng thái</th>
+                                        <th style="width: 15%;">Thao tác</th>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="method : ${shippingMethodPage.content}">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                         <td>
                                             <div class="form-check d-flex justify-content-center">
                                                 <input class="form-check-input method-checkbox" type="checkbox" 
@@ -157,6 +247,11 @@
                                                        onchange="updateSelectionControls()">
                                             </div>
                                         </td>
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                         <td th:text="${method.maPhuongThuc}">1</td>
                                         <td>
                                             <strong th:text="${method.tenNhaVanChuyen}">Giao hàng nhanh</strong>
@@ -182,10 +277,22 @@
                                             <button class="status-toggle"
                                                     th:classappend="${method.trangThai} ? 'status-active' : 'status-inactive'"
                                                     th:data-method-id="${method.maPhuongThuc}"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                                     th:data-method-name="${method.tenNhaVanChuyen}"
                                                     th:data-current-status="${method.trangThai}"
                                                     type="button"
                                                     onclick="showStatusModal(this)">
+<<<<<<< HEAD
+=======
+=======
+                                                    th:data-current-status="${method.trangThai}"
+                                                    type="button"
+                                                    onclick="toggleStatus(this)">
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                                 <span th:text="${method.trangThai ? 'Hoạt động' : 'Ngưng hoạt động'}">Hoạt động</span>
                                                 <i class="fas fa-chevron-down ms-1"></i>
                                             </button>
@@ -214,7 +321,15 @@
                                         </td>
                                     </tr>
                                     <tr th:if="${shippingMethodPage.content.empty}">
+<<<<<<< HEAD
                                         <td colspan="9">
+=======
+<<<<<<< HEAD
+                                        <td colspan="9">
+=======
+                                        <td colspan="8">
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                             <div class="empty-state">
                                                 <i class="fas fa-shipping-fast"></i>
                                                 <p>Không tìm thấy phương thức vận chuyển nào</p>
@@ -260,6 +375,10 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     <!-- Delete Modal (Đơn lẻ) -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -276,23 +395,60 @@
                         <i class="fas fa-exclamation-circle"></i>
                     </div>
                     <p>Bạn có chắc chắn muốn xóa phương thức vận chuyển <strong id="methodNameToDelete"></strong>?</p>
+<<<<<<< HEAD
+=======
+=======
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                        Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa phương thức vận chuyển <strong id="methodName"></strong>?</p>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                     <p class="text-danger">
                         <i class="fas fa-info-circle me-1"></i>
                         Hành động này không thể hoàn tác!
                     </p>
                 </div>
                 <div class="modal-footer">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Hủy bỏ
                     </button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                         <i class="fas fa-trash me-1"></i>Xóa
                     </button>
+<<<<<<< HEAD
+=======
+=======
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Xóa
+                        </button>
+                    </form>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                 </div>
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     <!-- Bulk Delete Modal -->
     <div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -557,4 +713,24 @@
     /*]]>*/
 </script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+=======
+    <!-- Status Toggle Dropdown Menu -->
+    <div id="statusDropdownMenu" class="dropdown-menu status-dropdown">
+        <a class="dropdown-item status-item" data-status="true">
+            <i class="fas fa-check-circle text-success me-2"></i>Hoạt động
+        </a>
+        <a class="dropdown-item status-item" data-status="false">
+            <i class="fas fa-times-circle text-danger me-2"></i>Ngưng hoạt động
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/admin/shipping-methods.js}"></script>
+</body>
+</html>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a

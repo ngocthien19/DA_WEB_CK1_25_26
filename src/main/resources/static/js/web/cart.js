@@ -545,7 +545,11 @@ function showToast(type, title, message) {
         setTimeout(() => {
             toast.remove();
         }, 300);
+<<<<<<< HEAD
     }, 3500); // Changed from 1500ms to 3500ms (1.5 seconds display time + delays)
+=======
+    }, 1500);
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
 }
 
 // =======================================================

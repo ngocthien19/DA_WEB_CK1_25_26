@@ -618,6 +618,7 @@ function toggleEditMode() {
                     
                     // Thiết lập callback để cập nhật tọa độ vào hidden fields
                     window.updateProfileCoordinates = function(lat, lng) {
+<<<<<<< HEAD
                         const latField = document.getElementById('profileLatitude');
                         const lngField = document.getElementById('profileLongitude');
                         
@@ -637,6 +638,25 @@ function toggleEditMode() {
                             if (typeof reverseGeocode === 'function') {
                                 setTimeout(() => {
                                     reverseGeocode(lat, lng, 'diaChi');
+=======
+                        document.getElementById('profileLatitude').value = lat;
+                        document.getElementById('profileLongitude').value = lng;
+                        console.log('📍 Tọa độ profile đã cập nhật:', lat, lng);
+                        
+                        // Trigger reverse geocode để cập nhật địa chỉ
+                        if (window.mapsHelper && window.mapsHelper.reverseGeocode) {
+                            // Tạm thời enable textarea để cập nhật được
+                            const diaChiField = document.getElementById('diaChi');
+                            if (diaChiField) {
+                                const wasDisabled = diaChiField.disabled;
+                                diaChiField.disabled = false;
+                                
+                                // Gọi reverse geocode
+                                setTimeout(() => {
+                                    if (typeof reverseGeocode === 'function') {
+                                        reverseGeocode(lat, lng);
+                                    }
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                                 }, 100);
                             }
                         }
@@ -1012,7 +1032,7 @@ function showToast(title, message, type = 'success', duration = 3000) {
     // Show toast with animation
     setTimeout(() => {
         toast.classList.add('show');
-    }, 100);
+    }, 1000);
 
     // Auto hide after duration
     const autoHide = setTimeout(() => {
@@ -1036,9 +1056,15 @@ function hideToast(toast) {
         if (toast.parentNode) {
             toast.parentNode.removeChild(toast);
         }
+<<<<<<< Updated upstream
     }, 300);
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+=======
+    }, 3000);
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
 }
 
 // ============= QUẢN LÝ ĐỊA CHỈ =============
@@ -1089,7 +1115,11 @@ function displayAddresses() {
 
     let html = '<div class="addresses-list">';
     addresses.forEach(addr => {
+<<<<<<< HEAD
         // Không hiển thị map ở đây - chỉ hiển thị thông tin địa chỉ
+=======
+        const hasCoordinates = addr.latitude && addr.longitude;
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
         html += `
             <div class="address-card ${addr.macDinh ? 'default' : ''}">
                 <div class="address-header">
@@ -1098,6 +1128,10 @@ function displayAddresses() {
                 </div>
                 <p class="address-phone"><i class="fas fa-phone"></i> ${escapeHtml(addr.soDienThoai)}</p>
                 <p class="address-detail"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(addr.diaChiChiTiet)}</p>
+<<<<<<< HEAD
+=======
+                ${hasCoordinates ? `<div id="map_${addr.maDiaChi}" class="small-map"></div>` : ''}
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                 <div class="address-actions">
                     <button class="btn btn-sm btn-secondary" onclick="editAddress(${addr.maDiaChi})">
                         <i class="fas fa-edit"></i> Sửa
@@ -1123,8 +1157,24 @@ function displayAddresses() {
     
     container.innerHTML = html;
     
+<<<<<<< HEAD
     // KHÔNG hiển thị bản đồ ở đây nữa
     // Map chỉ hiển thị khi thêm/sửa địa chỉ trong modal
+=======
+    // Hiển thị bản đồ cho các địa chỉ có tọa độ
+    addresses.forEach(addr => {
+        if (addr.latitude && addr.longitude && window.mapsHelper) {
+            setTimeout(() => {
+                window.mapsHelper.showAddressOnMap(
+                    addr.diaChiChiTiet,
+                    addr.latitude,
+                    addr.longitude,
+                    `map_${addr.maDiaChi}`
+                );
+            }, 100);
+        }
+    });
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
 }
 
 // Show add address modal

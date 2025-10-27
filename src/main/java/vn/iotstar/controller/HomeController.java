@@ -103,8 +103,8 @@ public class HomeController {
                 .collect(Collectors.toList());
 
         for (DanhMuc danhMuc : danhMucs) {
-            // CHỈ lấy sản phẩm đang hoạt động và từ cửa hàng đang hoạt động
-            List<SanPham> sanPhams = sanPhamService.findTop4ByDanhMucAndTrangThaiTrueOrderByNgayNhapDesc(danhMuc).stream()
+            // Lấy sản phẩm bán chạy (số lượng đã bán > 10), sắp xếp từ cao đến thấp
+            List<SanPham> sanPhams = sanPhamService.findTop4BestSellingProductsByDanhMuc(danhMuc).stream()
                     .filter(sanPham -> 
                         sanPham.getTrangThai() != null && sanPham.getTrangThai() && 
                         sanPham.getCuaHang() != null && sanPham.getCuaHang().getTrangThai() != null && 

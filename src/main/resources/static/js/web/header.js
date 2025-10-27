@@ -40,7 +40,15 @@ window.showToast = function(type, title, message, duration = 3000) {
     setTimeout(() => {
         if (toast.parentElement) {
             toast.style.animation = 'slideOutRight 0.3s ease-out';
+<<<<<<< HEAD
             setTimeout(() => toast.remove(), 1000);
+=======
+<<<<<<< HEAD
+            setTimeout(() => toast.remove(), 1000);
+=======
+            setTimeout(() => toast.remove(), 300);
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
         }
     }, duration);
 };

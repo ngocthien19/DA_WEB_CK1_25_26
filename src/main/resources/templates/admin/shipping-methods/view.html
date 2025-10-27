@@ -22,6 +22,22 @@
                 <div th:replace="~{admin/fragments/header :: header}"></div>
 
                 <div class="stats-container">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/admin/shipping-methods}">Phương thức vận chuyển</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+                        </ol>
+                    </nav>
+
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                     <!-- Shipping Method Profile Header -->
                     <div class="product-profile-header">
                         <div class="row align-items-center">
@@ -166,7 +182,15 @@
                         </a>
                         <button type="button" 
                                 class="btn btn-danger"
+<<<<<<< HEAD
                                 onclick="showDeleteConfirmation()">
+=======
+<<<<<<< HEAD
+                                onclick="showDeleteConfirmation()">
+=======
+                                onclick="confirmDelete()">
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
                             <i class="fas fa-trash me-2"></i>Xóa
                         </button>
                     </div>
@@ -175,6 +199,10 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -209,11 +237,21 @@
     </div>
 
     <!-- Delete Form (Hidden) -->
+<<<<<<< HEAD
+=======
+=======
+    <!-- Delete Confirmation Form (Hidden) -->
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     <form th:id="'deleteForm'" 
           th:action="@{/admin/shipping-methods/delete/{id}(id=${shippingMethod.maPhuongThuc})}" 
           method="post" 
           style="display: none;">
     </form>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
     
     <!-- Toast Container -->
     <div id="toastContainer"></div>
@@ -299,4 +337,21 @@
         /*]]>*/
     </script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+=======
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete() {
+            if (confirm('Bạn có chắc chắn muốn xóa phương thức vận chuyển này?\n\nHành động này không thể hoàn tác!')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+</body>
+</html>
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
+>>>>>>> fb880b8a8a91d708fa8460516fa1c0a33c602e3a
