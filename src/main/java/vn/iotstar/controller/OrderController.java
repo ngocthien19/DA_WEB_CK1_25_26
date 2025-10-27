@@ -53,6 +53,7 @@ public class OrderController {
     @Autowired
     private PhuongThucVanChuyenService phuongThucVanChuyenService;
     
+<<<<<<< HEAD
     @GetMapping("/vietqr-payment")
     public String showVietQRPayment(@RequestParam String orderIds, 
                                    @RequestParam BigDecimal amount,
@@ -122,6 +123,8 @@ public class OrderController {
         }
     }
     
+=======
+>>>>>>> af2d5be547d958b5914b84fe79f7db3ca754a520
 >>>>>>> Stashed changes
     @GetMapping("/qr-payment")
     public String showQRPayment(@RequestParam Integer orderId, 
