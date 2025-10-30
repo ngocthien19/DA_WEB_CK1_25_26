@@ -1,1718 +1,1300 @@
-# Đặc tả chức năng theo Role
+# 🐾 Pet Shop Application
 
-## Tổng quan
-Dự án là một hệ thống thương mại điện tử hoàn chỉnh với các vai trò: Admin, Vendor (Người bán), User (Người dùng), và Shipper (Người giao hàng). Mỗi vai trò có các chức năng riêng biệt, được thiết kế để tối ưu hóa trải nghiệm người dùng và hiệu quả quản lý.
+<div align="center">
 
-## 1. Chức năng chung (Authentication)
+![Pet Shop Banner](https://img.shields.io/badge/Pet%20Shop-Spring%20Boot-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-### 1.1. Đăng nhập
-- **Mô tả**: Cho phép người dùng đăng nhập vào hệ thống
-- **Tác nhân**: Tất cả (Admin, Vendor, User, Shipper)
-- **Điều kiện trước**: Người dùng đã có tài khoản trong hệ thống
-- **Điều kiện tiên quyết**: Không
-- **Luồng chính**:
-  1. Người dùng nhập email và mật khẩu
-  2. Hệ thống xác thực thông tin
-  3. Hệ thống tạo JWT token
-  4. Hệ thống trả về thông tin người dùng và token
-- **Luồng thay thế**: Không có
-- **Luồng ngoại lệ**:
-  - Email hoặc mật khẩu không đúng: Hệ thống thông báo lỗi
-  - Tài khoản chưa xác thực: Yêu cầu xác thực email
+</div>
 
-### 1.2. Đăng ký
-- **Mô tả**: Cho phép người dùng tạo tài khoản mới
-- **Tác nhân**: User
-- **Điều kiện trước**: Email chưa được sử dụng trong hệ thống
-- **Điều kiện tiên quyết**: Không
-- **Luồng chính**:
-  1. Người dùng nhập thông tin đăng ký
-  2. Hệ thống gửi mã OTP qua email
-  3. Người dùng xác thực OTP
-  4. Tài khoản được tạo và kích hoạt
-- **Luồng ngoại lệ**:
-  - Email đã tồn tại: Thông báo lỗi
-  - OTP không hợp lệ: Yêu cầu nhập lại
-  - OTP hết hạn: Yêu cầu gửi lại
+## 📋 Giới thiệu
 
-### 1.3. Quên mật khẩu
-- **Mô tả**: Cho phép người dùng khôi phục mật khẩu
-- **Tác nhân**: Tất cả
-- **Điều kiện trước**: Tài khoản tồn tại trong hệ thống
-- **Điều kiện tiên quyết**: Không
-- **Luồng chính**:
-  1. Người dùng nhập email
-  2. Hệ thống gửi mã OTP
-  3. Người dùng xác thực OTP
-  4. Người dùng đặt mật khẩu mới
-- **Luồng ngoại lệ**:
-  - Email không tồn tại
-  - OTP không hợp lệ/hết hạn
+Chào mừng bạn đến với ứng dụng Pet Shop! 🎉
 
-## 2. Chức năng Admin
+Đây là ứng dụng web quản lý cửa hàng thú cưng hiện đại được phát triển bằng Spring Boot. Hệ thống của chúng tôi được thiết kế để mang lại trải nghiệm mua sắm trực tuyến tốt nhất cho những người yêu thú cưng.
 
-### 2.1. Quản lý Cấu hình Hệ thống
-- **Mô tả**: Quản lý các cấu hình và thiết lập hệ thống
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập với quyền Admin
-- **Luồng chính**:
-  1. Quản lý phương thức vận chuyển:
-     - Cấu hình dịch vụ:
-       + Thêm nhà vận chuyển
-       + Cài đặt phí vận chuyển
-       + Thiết lập vùng phục vụ
-     - Quản lý chính sách:
-       + Thời gian giao dự kiến
-       + Chính sách hoàn trả
-       + Bảo hiểm hàng hóa
-     - Theo dõi hiệu quả:
-       + Tỷ lệ giao thành công
-       + Chi phí vận chuyển
-       + Đánh giá dịch vụ
+### 🔑 Các vai trò trong hệ thống:
 
-  2. Quản lý thanh toán:
-     - Cấu hình cổng thanh toán:
-       + Kết nối VietQR/Momo/VNPay
-       + Thiết lập phí giao dịch
-       + Cài đặt mã merchant
-     - Quản lý giao dịch:
-       + Theo dõi trạng thái
-       + Xử lý hoàn tiền
-       + Đối soát thanh toán
-     - Bảo mật:
-       + Mã hóa thông tin
-       + Giới hạn giao dịch
-       + Phát hiện gian lận
+| Vai trò | Mô tả |
+|---------|--------|
+| 👤 Khách hàng (USER) | Người dùng cuối, thực hiện mua sắm và quản lý đơn hàng |
+| 👨‍💼 Người giao hàng (SHIPPER) | Xác nhận đơn hàng và cập nhật trạng thái đơn hàng |
+| 👨‍💼 Chủ cửa hàng (VENDOR) | Xử lý đơn hàng và hỗ trợ khách hàng |
+| 👨‍💻 Quản trị viên (ADMIN) | Quản lý toàn bộ hệ thống và phân quyền |
 
-  3. Thiết lập hệ thống:
-     - Cấu hình chung:
-       + Logo/thương hiệu
-       + Email hệ thống
-       + Thông báo chung
-     - Quản lý cache:
-       + Xóa cache
-       + Tối ưu hiệu suất
-       + Đồng bộ dữ liệu
-     - Backup:
-       + Lịch backup
-       + Khôi phục dữ liệu
-       + Lưu trữ an toàn
+## 📚 Hướng dẫn sử dụng chi tiết theo vai trò
 
-### 2.2. Quản lý Khách hàng
-- **Mô tả**: Quản lý thông tin và hoạt động khách hàng
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập Admin
-- **Luồng chính**:
-  1. Quản lý tài khoản:
-     - Thông tin khách hàng:
-       + Xem chi tiết cá nhân
-       + Lịch sử mua hàng
-       + Điểm thưởng/hạng
-     - Phân loại khách:
-       + Theo giá trị
-       + Theo tần suất mua
-       + Theo khu vực
-     - Tương tác:
-       + Gửi thông báo
-       + Email marketing
-       + Khảo sát ý kiến
+### 🛍️ Khách hàng (USER)
 
-  2. Xử lý khiếu nại:
-     - Tiếp nhận:
-       + Phân loại vấn đề
-       + Mức độ ưu tiên
-       + Phân công xử lý
-     - Theo dõi:
-       + Tiến độ giải quyết
-       + Thời gian phản hồi
-       + Đánh giá hài lòng
-     - Báo cáo:
-       + Thống kê khiếu nại
-       + Phân tích nguyên nhân
-       + Đề xuất cải thiện
+<details>
+<summary><b>📝 Xem hướng dẫn chi tiết cho khách hàng</b></summary>
 
-  3. Chương trình khách hàng:
-     - Tích điểm:
-       + Cài đặt tỷ lệ
-       + Quản lý điểm
-       + Quy đổi ưu đãi
-     - Hạng thành viên:
-       + Thiết lập tiêu chí
-       + Quyền lợi đặc biệt
-       + Thăng/giảm hạng
-     - Quà tặng:
-       + Sinh nhật/dịp lễ
-       + Khách VIP
-       + Chiến dịch đặc biệt
+#### 🔐 Đăng ký tài khoản
+```mermaid
+graph TD
+    A[Truy cập trang chủ] --> B[Click nút Đăng ký]
+    B --> C[Điền thông tin]
+    C --> D[Click Đăng ký]
+    D --> E[Nhận mã OTP qua email]
+    E --> F[Xác thực tài khoản]
+```
 
-### 2.3. Quản lý Bảo mật và Phân quyền
-- **Mô tả**: Quản lý bảo mật và phân quyền hệ thống
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập với quyền Admin cao cấp
-- **Luồng chính**:
-  1. Quản lý vai trò:
-     - Thiết lập vai trò:
-       + Tạo vai trò mới
-       + Định nghĩa quyền hạn
-       + Phân cấp quản lý
-     - Phân quyền chi tiết:
-       + Theo chức năng
-       + Theo dữ liệu
-       + Theo thời gian
-     - Kiểm soát truy cập:
-       + Giới hạn IP
-       + Thời gian truy cập
-       + Đa thiết bị
+> 💡 **Thông tin cần điền:**
+> - 👤 Họ và tên
+> - 📧 Email (dùng để đăng nhập)
+> - 📱 Số điện thoại
+> - 🔒 Mật khẩu
+> - 🔐 Xác nhận mật khẩu
 
-  2. Giám sát bảo mật:
-     - Theo dõi hoạt động:
-       + Log đăng nhập
-       + Thao tác quan trọng
-       + Truy cập bất thường
-     - Cảnh báo bảo mật:
-       + Phát hiện tấn công
-       + Login bất thường
-       + Thay đổi quan trọng
-     - Xử lý sự cố:
-       + Khóa tài khoản
-       + Cô lập đe dọa
-       + Khôi phục hệ thống
+#### 🔑 Đăng nhập
 
-  3. Chính sách bảo mật:
-     - Mật khẩu:
-       + Độ phức tạp
-       + Thời hạn thay đổi
-       + Lịch sử mật khẩu
-     - Xác thực:
-       + 2FA/MFA
-       + Captcha
-       + Khóa sinh trắc học
-     - Mã hóa dữ liệu:
-       + Thông tin thanh toán
-       + Dữ liệu cá nhân
-       + Tin nhắn riêng tư
+<div align="center">
+<table>
+<tr>
+<th>Bước</th>
+<th>Hành động</th>
+</tr>
+<tr>
+<td>1️⃣</td>
+<td>Click vào nút "Đăng nhập"</td>
+</tr>
+<tr>
+<td>2️⃣</td>
+<td>Nhập email và mật khẩu</td>
+</tr>
+<tr>
+<td>3️⃣</td>
+<td>Tùy chọn "Ghi nhớ đăng nhập"</td>
+</tr>
+<tr>
+<td>4️⃣</td>
+<td>Click "Đăng nhập"</td>
+</tr>
+</table>
+</div>
 
-### 2.4. Thống kê và Báo cáo
-- **Mô tả**: Dashboard thống kê tổng quan hệ thống
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập với quyền Admin
-- **Luồng chính**:
-  1. Thống kê tổng quan:
-     - Doanh số:
-       + Doanh thu theo thời gian
-       + So sánh các giai đoạn
-       + Biểu đồ tăng trưởng
-     - Đơn hàng:
-       + Tổng số đơn hàng
-       + Tỷ lệ hoàn thành
-       + Đơn hủy/hoàn trả
-     - Người dùng:
-       + Số lượng theo role
-       + Tài khoản mới
-       + Tài khoản active
+#### 👤 Quản lý thông tin cá nhân
+🔄 **Các thao tác chính:**
 
-  2. Báo cáo chi tiết:
-     - Phân tích bán hàng:
-       + Top sản phẩm bán chạy
-       + Top cửa hàng doanh thu
-       + Hiệu quả khuyến mãi
-     - Hoạt động vận chuyển:
-       + Hiệu suất giao hàng
-       + Thời gian trung bình
-       + Tỷ lệ khiếu nại
-     - Hoạt động người dùng:
-       + Lượt truy cập
-       + Thời gian sử dụng
-       + Tương tác hệ thống
+<div align="center">
 
-  3. Cài đặt báo cáo:
-     - Tùy chỉnh hiển thị:
-       + Chọn chỉ số theo dõi
-       + Định dạng báo cáo
-       + Giai đoạn thống kê
-     - Xuất báo cáo:
-       + PDF/Excel
-       + Email định kỳ
-       + Lưu trữ lịch sử
+| Tính năng | Mô tả | Icon |
+|-----------|--------|------|
+| Thông tin cơ bản | Cập nhật họ tên, số điện thoại, ngày sinh | 📝 |
+| Đổi mật khẩu | Thay đổi mật khẩu đăng nhập | 🔒 |
+| Cập nhật avatar | Tải lên ảnh đại diện mới | 🖼️ |
+| Địa chỉ giao hàng | Thêm/sửa địa chỉ nhận hàng | 📍 |
 
-- **Luồng thay thế**:
-  1. Báo cáo tự động:
-     - Lập lịch gửi
-     - Định dạng mẫu
-  2. Phân tích chi tiết:
-     - Drill-down dữ liệu
-     - So sánh chỉ số
+</div>
 
-- **Luồng ngoại lệ**:
-  1. Dữ liệu thiếu:
-     - Đánh dấu không đủ
-     - Ước tính tỷ lệ
-  2. Lỗi tính toán:
-     - Kiểm tra sai lệch
-     - Đồng bộ lại số liệu
+#### 🛒 Mua sắm
 
-### 2.2. Quản lý người dùng
-- **Mô tả**: Quản lý thông tin và phân quyền người dùng
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập với quyền Admin
-- **Luồng chính**:
-  1. Xem danh sách người dùng
-  2. Thêm/sửa/xóa người dùng
-  3. Phân quyền người dùng
-  4. Khóa/mở khóa tài khoản
-- **Luồng ngoại lệ**: 
-  - Không thể xóa tài khoản đang hoạt động
-  - Không thể thay đổi quyền Admin cao cấp
+<details>
+<summary><b>🔍 Tìm kiếm sản phẩm</b></summary>
 
-### 2.2. Quản lý danh mục
-- **Mô tả**: Quản lý các danh mục sản phẩm
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Đăng nhập với quyền Admin
-- **Luồng chính**:
-  1. Xem danh sách danh mục
-  2. Thêm/sửa/xóa danh mục
-  3. Sắp xếp thứ tự danh mục
-- **Luồng ngoại lệ**:
-  - Không thể xóa danh mục có sản phẩm
+- 🏠 Lướt trang chủ
+- 🔎 Sử dụng thanh tìm kiếm thông minh
+- 📑 Lọc theo danh mục, lọc theo (bán chạy/yêu thích/đánh giá)
+- ⚡ Sắp xếp linh hoạt (giá/tên/mới nhất)
 
-## 3. Chức năng Vendor
+</details>
 
-### 3.1. Quản lý cửa hàng
-- **Mô tả**: Quản lý thông tin và hoạt động cửa hàng
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Đăng nhập với quyền Vendor
-- **Luồng chính**:
-  1. Cập nhật thông tin cửa hàng
-  2. Quản lý sản phẩm
-  3. Xem đánh giá cửa hàng
-  4. Quản lý đơn hàng
-- **Luồng ngoại lệ**:
-  - Cửa hàng bị khóa
-  - Thông tin không hợp lệ
+<details>
+<summary><b>📦 Xem chi tiết sản phẩm</b></summary>
 
-### 3.2. Quản lý Vận hành Cửa hàng
-- **Mô tả**: Quản lý hoạt động và vận hành cửa hàng
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng đang hoạt động
-- **Luồng chính**:
-  1. Quản lý đơn hàng:
-     - Xử lý đơn mới:
-       + Kiểm tra tồn kho
-       + Xác nhận đơn hàng
-       + In phiếu gói hàng
-     - Xử lý vận chuyển:
-       + Chọn đơn vị vận chuyển
-       + In vận đơn
-       + Bàn giao shipper
-     - Theo dõi giao hàng:
-       + Cập nhật trạng thái
-       + Xử lý sự cố
-       + Xác nhận hoàn thành
+- 🔍 Xem thông tin chi tiết
+- 💰 Kiểm tra giá và khuyến mãi
+- 📊 Xem số lượng còn trong kho
+- ⭐ Đọc đánh giá từ khách hàng
 
-  2. Quản lý doanh thu:
-     - Thu chi:
-       + Doanh thu bán hàng
-       + Chi phí vận chuyển
-       + Phí hoa hồng
-     - Đối soát:
-       + Với hệ thống
-       + Với vận chuyển
-       + Với khách hàng
-     - Rút tiền:
-       + Yêu cầu rút tiền
-       + Lịch sử giao dịch
-       + Số dư khả dụng
+</details>
 
-  3. Quản lý nhân viên:
-     - Phân quyền:
-       + Tạo tài khoản
-       + Cấp quyền truy cập
-       + Theo dõi hoạt động
-     - Hiệu suất:
-       + Thời gian xử lý
-       + Đơn hoàn thành
-       + Đánh giá KPI
-     - Lương thưởng:
-       + Tính hoa hồng
-       + Thưởng doanh số
-       + Phạt vi phạm
+<details>
+<summary><b>🛍️ Thêm vào giỏ hàng</b></summary>
 
-### 3.3. Quản lý Kho và Vận chuyển
-- **Mô tả**: Quản lý kho hàng và vận chuyển
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng hoạt động
-- **Luồng chính**:
-  1. Quản lý kho hàng:
-     - Nhập kho:
-       + Tạo phiếu nhập
-       + Kiểm tra chất lượng
-       + Cập nhật tồn kho
-     - Xuất kho:
-       + Phiếu xuất tự động
-       + Đối chiếu đơn hàng
-       + Ghi nhận hao hụt
-     - Kiểm kê:
-       + Định kỳ kiểm kê
-       + Đối chiếu thực tế
-       + Báo cáo chênh lệch
+```mermaid
+graph LR
+    A[Chọn số lượng] -->|Click| B[Thêm vào giỏ]
+    B --> C[Thông báo xác nhận]
+    C -->|Tiếp tục mua sắm| A
+    C -->|Đến giỏ hàng| D[Xem giỏ hàng]
+```
 
-  2. Quản lý vận chuyển:
-     - Thiết lập giao hàng:
-       + Khu vực phục vụ
-       + Phí vận chuyển
-       + Thời gian giao
-     - Đối tác vận chuyển:
-       + Chọn đơn vị
-       + Đàm phán giá
-       + Đánh giá chất lượng
-     - Xử lý đặc biệt:
-       + Hàng dễ vỡ
-       + Hàng giá trị cao
-       + Giao hỏa tốc
+</details>
 
-  3. Tối ưu vận hành:
-     - Dự báo nhu cầu:
-       + Theo mùa/sự kiện
-       + Theo lịch sử bán
-       + Theo xu hướng
-     - Quản lý không gian:
-       + Sắp xếp kho
-       + Phân loại hàng
-       + Tối ưu diện tích
-     - Cảnh báo tự động:
-       + Hàng sắp hết
-       + Hàng tồn lâu
-       + Hàng cận date
+#### 🛒 Giỏ hàng
 
-### 3.4. Quản lý Marketing và Bán hàng
-- **Mô tả**: Quản lý hoạt động marketing và bán hàng
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng hoạt động
-- **Luồng chính**:
-  1. Chiến dịch khuyến mãi:
-     - Tạo khuyến mãi:
-       + Loại khuyến mãi
-       + Điều kiện áp dụng
-       + Thời gian hiệu lực
-     - Quản lý mã giảm giá:
-       + Tạo mã tự động
-       + Theo dõi sử dụng
-       + Giới hạn sử dụng
-     - Đánh giá hiệu quả:
-       + Doanh số tăng thêm
-       + Chi phí khuyến mãi
-       + ROI chiến dịch
+<div align="center">
 
-  2. Quảng cáo sản phẩm:
-     - SEO sản phẩm:
-       + Tối ưu tiêu đề
-       + Mô tả sản phẩm
-       + Tag/từ khóa
-     - Quảng bá:
-       + Flash sale
-       + Sản phẩm nổi bật
-       + Deal sốc
-     - Media:
-       + Hình ảnh chất lượng
-       + Video sản phẩm
-       + Review khách hàng
+| Chức năng | Thao tác | Icon |
+|-----------|----------|------|
+| Xem giỏ hàng | Danh sách sản phẩm đã chọn | 📋 |
+| Cập nhật số lượng | Tăng/giảm số lượng sản phẩm | ⚖️ |
+| Xóa sản phẩm | Loại bỏ sản phẩm khỏi giỏ | 🗑️ |
+| Tính tổng tiền | Tự động tính tổng và khuyến mãi | 💰 |
 
-  3. Chăm sóc khách hàng:
-     - Tương tác:
-       + Chat với khách
-       + Email marketing
-       + Thông báo ưu đãi
-     - Xử lý phản hồi:
-       + Đánh giá sản phẩm
-       + Khiếu nại/trả hàng
-       + Hậu mãi
-     - Khách hàng thân thiết:
-       + Chính sách ưu đãi
-       + Quà tặng sinh nhật
-       + Dịch vụ VIP
+</div>
 
-### 3.4. Thống kê và Báo cáo Cửa hàng
-- **Mô tả**: Dashboard thống kê hoạt động cửa hàng
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng đang hoạt động
-- **Luồng chính**:
-  1. Thống kê doanh thu:
-     - Doanh số bán hàng:
-       + Theo ngày/tuần/tháng
-       + Theo danh mục
-       + Theo sản phẩm
-     - Phân tích lợi nhuận:
-       + Biên lợi nhuận
-       + Chi phí vận chuyển
-       + Chiết khấu khuyến mãi
-     - So sánh kỳ vọng:
-       + Mục tiêu đề ra
-       + Tăng trưởng
-       + Dự báo doanh số
+#### 💳 Thanh toán
 
-  2. Phân tích đơn hàng:
-     - Thống kê số lượng:
-       + Đơn mới
-       + Đang xử lý
-       + Đã giao
-       + Đã hủy
-     - Phân tích khách hàng:
-       + Khách hàng mới/cũ
-       + Tần suất mua
-       + Giá trị trung bình
-     - Đánh giá chất lượng:
-       + Rating trung bình
-       + Phản hồi khách hàng
-       + Tỷ lệ khiếu nại
+<div align="center">
 
-  3. Quản lý hàng hóa:
-     - Theo dõi tồn kho:
-       + Số lượng hiện có
-       + Mức tồn kho tối thiểu
-       + Cảnh báo hết hàng
-     - Phân tích bán hàng:
-       + Sản phẩm bán chạy
-       + Sản phẩm tồn đọng
-       + Xu hướng thị trường
-     - Hiệu quả khuyến mãi:
-       + Doanh số khuyến mãi
-       + Tỷ lệ chuyển đổi
-       + ROI chiến dịch
+```mermaid
+graph TD
+    A[Bắt đầu thanh toán] --> B{Chọn phương thức}
+    B -->|COD| C[Thanh toán khi nhận hàng]
+    B -->|Chuyển khoản| D[Thanh toán qua VietQR]
+    
+    C --> E[Xác nhận đơn hàng]
+    
+    D --> F[Hiển thị mã QR]
+    F --> G[Quét mã bằng App Ngân hàng]
+    G --> H[Xác nhận thanh toán trong app]
+    H --> I[Nhận kết quả thành công]
+    
+    I --> E
+    E --> J[Hoàn tất đặt hàng]
+```
 
-- **Luồng thay thế**:
-  1. Xuất báo cáo:
-     - PDF chi tiết
-     - File Excel
-     - Biểu đồ thống kê
-  2. Phân tích nâng cao:
-     - So sánh đối thủ
-     - Dự báo xu hướng
-     - Gợi ý tối ưu
+</div>
 
-- **Luồng ngoại lệ**:
-  1. Dữ liệu không đồng bộ:
-     - Kiểm tra sai lệch
-     - Đồng bộ thủ công
-  2. Lỗi tính toán:
-     - Báo cáo admin
-     - Điều chỉnh số liệu
-  3. Thống kê không đủ:
-     - Đánh dấu thiếu
-     - Ước tính tạm thời
+> 💡 **Lưu ý về thanh toán:**
+> - 🏠 **COD**: Thanh toán khi nhận hàng tại địa chỉ
+> - 💳 **VietQR**: Thanh toán bằng cách quét mã QR
 
-### 3.3. Quản lý sản phẩm và khuyến mãi
-- **Mô tả**: Quản lý sản phẩm và chương trình khuyến mãi
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng đang hoạt động
-- **Luồng chính**:
-  1. Quản lý sản phẩm:
-     - Thêm sản phẩm mới:
-       + Thông tin cơ bản
-       + Mô tả chi tiết
-       + Thông số kỹ thuật
-       + SEO meta tags
-     - Upload hình ảnh:
-       + Nhiều ảnh sản phẩm
-       + Sắp xếp thứ tự
-       + Tối ưu kích thước
-     - Quản lý tồn kho:
-       + Cập nhật số lượng
-       + Cảnh báo hết hàng
-       + Lịch sử xuất/nhập
+#### 📦 Quản lý đơn hàng
 
-  2. Quản lý khuyến mãi:
-     - Tạo khuyến mãi mới:
-       + Mã giảm giá (3-50 ký tự)
-       + Mức giảm (0-100%)
-       + Thời gian áp dụng
-       + Số lượng mã giới hạn
-     - Thiết lập điều kiện:
-       + Giá trị đơn tối thiểu
-       + Sản phẩm áp dụng
-       + Đối tượng khách hàng
-     - Theo dõi hiệu quả:
-       + Số lượng đã dùng
-       + Doanh số giảm giá
-       + Tỷ lệ chuyển đổi
+<div align="center">
 
-  3. Quản lý giá:
-     - Cập nhật giá bán:
-       + Giá niêm yết
-       + Giá khuyến mãi
-       + Giá theo số lượng
-     - Lịch sử thay đổi giá
-     - So sánh với thị trường
+| Trạng thái | Mô tả | Icon |
+|------------|-------|------|
+| Chờ xác nhận | Đơn hàng mới tạo | ⏳ |
+| Đang xử lý | Đang chuẩn bị hàng | 🔄 |
+| Đang giao | Đang vận chuyển | 🚚 |
+| Đã giao | Giao hàng thành công | ✅ |
+| Đã hủy | Đơn hàng bị hủy | ❌ |
 
-- **Luồng thay thế**:
-  1. Nhập/Xuất hàng loạt:
-     - Import từ Excel
-     - Cập nhật nhiều sản phẩm
-  2. Sao chép khuyến mãi:
-     - Dùng lại mẫu cũ
-     - Điều chỉnh thông số
+</div>
 
-- **Luồng ngoại lệ**:
-  1. Sản phẩm:
-     - Trùng mã/tên
-     - Ảnh không hợp lệ
-     - Thông tin thiếu
-  2. Khuyến mãi:
-     - Mã trùng lặp
-     - Thời gian không hợp lệ
-     - Vượt giới hạn giảm
-  3. Giá bán:
-     - Thấp hơn giá vốn
-     - Vượt ngưỡng cho phép
+<details>
+<summary><b>📋 Chi tiết đơn hàng</b></summary>
 
-## 4. Chức năng User
+- 📝 Xem thông tin sản phẩm
+- 🔍 Theo dõi trạng thái 
+- 📅 Xem lịch sử giao hàng
+- 💬 Nhắn tin với shop
 
-### 4.1. Quản lý giỏ hàng
-- **Mô tả**: Thao tác với giỏ hàng
-- **Tác nhân**: User
-- **Điều kiện trước**: Đăng nhập
-- **Luồng chính**:
-  1. Thêm sản phẩm vào giỏ
-  2. Cập nhật số lượng
-  3. Xóa sản phẩm
-  4. Thanh toán
-- **Luồng ngoại lệ**:
-  - Sản phẩm hết hàng
-  - Số lượng vượt tồn kho
+</details>
 
-### 4.2. Đặt hàng và Thanh toán
-- **Mô tả**: Quy trình đặt hàng và thanh toán hoàn chỉnh
-- **Tác nhân**: User
-- **Điều kiện trước**: 
-  - Có sản phẩm trong giỏ hàng
-  - Đã đăng nhập vào hệ thống
-- **Luồng chính**:
-  1. Xác nhận thông tin đơn hàng:
-     - Địa chỉ giao hàng:
-       + Chọn từ danh sách có sẵn
-       + Thêm địa chỉ mới
-       + Đặt làm mặc định
-     - Thông tin liên hệ:
-       + Tên người nhận
-       + Số điện thoại
-       + Ghi chú đặc biệt
+<details>
+<summary><b>❌ Hủy đơn hàng</b></summary>
+
+> ⚠️ **Lưu ý**: Chỉ có thể hủy đơn khi:
+> - 🕒 Đơn hàng chưa được xử lý
+> - 📝 Có lý do hủy hợp lệ
+> - ⏰ Trong thời gian cho phép
+
+</details>
+
+<details>
+<summary><b>⭐ Đánh giá sản phẩm</b></summary>
+
+```mermaid
+graph TD
+    A[Nhận hàng thành công] --> B[Vào mục Đánh giá]
+    B --> C[Chọn số sao 1-5]
+    C --> D[Viết nhận xét]
+    D --> E[Đăng ảnh sản phẩm]
+    E --> F[Gửi đánh giá]
+```
+
+</details>
+
+</details>
+
+### 👨‍💻 Người giao hàng (SHIPPER)
+
+<details>
+<summary><b>🚚 Xem hướng dẫn chi tiết cho shipper</b></summary>
+
+#### 🔐 Truy cập hệ thống
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[Truy cập trang đăng nhập] -->|Đăng nhập| B[Xác thực tài khoản shipper]
+    B -->|Thành công| C[Dashboard shipper]
+    B -->|Thất bại| D[Thông báo lỗi]
+    D --> A
+```
+
+</div>
+
+#### 📦 Quản lý đơn hàng được phân công
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách đơn | 📋 | Hiển thị đơn hàng được phân công giao |
+| Tìm kiếm đơn | 🔍 | Tìm theo mã đơn, tên KH, địa chỉ |
+| Lọc đơn hàng | ⚙️ | Lọc theo khu vực, trạng thái, ngày |
+| Xác nhận nhận đơn | ✅ | Xác nhận đã nhận hàng để giao |
+| Cập nhật trạng thái | 🔄 | Cập nhật tiến độ giao hàng |
+| Hủy đơn hàng | ❌ | Hủy đơn không thể giao được |
+| Xem chi tiết | 👁️ | Xem thông tin chi tiết đơn hàng |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình xử lý đơn hàng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem đơn được phân công] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Xác nhận nhận đơn]
+    C --> E[Cập nhật trạng thái]
+    C --> F[Hủy đơn hàng]
+    C --> G[Xem chi tiết đơn]
+    D --> H[Lưu thay đổi]
+    E --> H
+    F --> H
+```
+
+</details>
+
+#### 🚚 Quy trình giao hàng chi tiết
+
+<details>
+<summary><b>🔄 Cập nhật trạng thái đơn hàng</b></summary>
+
+<div align="center">
+
+| Trạng thái | Icon | Mô tả | Hành động |
+|------------|------|--------|-----------|
+| Đã nhận hàng | 📥 | Đã nhận hàng từ kho | Xác nhận với hệ thống |
+| Đang giao hàng | 🚚 | Đang trên đường giao | Cập nhật vị trí |
+| Đã đến nơi | 📍 | Đã đến địa chỉ giao | Thông báo cho KH |
+| Giao thành công | ✅ | Đã giao hàng thành công | Xác nhận hoàn tất |
+| Giao thất bại | ❌ | Không giao được | Ghi rõ lý do |
+
+</div>
+
+```mermaid
+graph TD
+    A[Đơn hàng mới] --> B[Xác nhận nhận hàng]
+    B --> C[Bắt đầu giao hàng]
+    C --> D[Cập nhật: Đang giao]
+    D --> E{Đến địa chỉ?}
+    E -->|Có| F[Thông báo cho KH]
+    E -->|Không| D
+    F --> G{KH có nhận?}
+    G -->|Có| H[Giao thành công]
+    G -->|Không| I[Giao thất bại]
+    H --> J[Xác nhận hoàn tất]
+    I --> K[Ghi lý do hủy]
+```
+
+</details>
+
+<details>
+<summary><b>❌ Quy trình hủy đơn hàng</b></summary>
+
+<div align="center">
+
+| Lý do hủy | Mô tả | Yêu cầu bổ sung |
+|-----------|-------|-----------------|
+| Địa chỉ sai | Không tìm thấy địa chỉ | 📍 Chụp ảnh địa chỉ thực tế |
+| KH không liên lạc | Không trả lời điện thoại | 📞 Ghi lại số lần gọi |
+| KH từ chối | KH không nhận hàng | 📝 Lý do từ chối |
+| Hàng hư hỏng | Sản phẩm bị vỡ/hỏng | 🖼️ Chụp ảnh minh chứng |
+| Thời tiết | Thời tiết bất lợi | 🌧️ Ghi rõ điều kiện |
+
+</div>
+
+```mermaid
+graph TD
+    A[Quyết định hủy đơn] --> B{Chọn lý do}
+    B --> C[Địa chỉ sai]
+    B --> D[KH không liên lạc]
+    B --> E[KH từ chối]
+    B --> F[Hàng hư hỏng]
+    B --> G[Thời tiết]
+    C --> H[Chụp ảnh địa chỉ]
+    D --> I[Ghi log cuộc gọi]
+    E --> J[Xác nhận lý do]
+    F --> K[Chụp ảnh sản phẩm]
+    G --> L[Mô tả điều kiện]
+    H --> M[Gửi yêu cầu hủy]
+    I --> M
+    J --> M
+    K --> M
+    L --> M
+```
+
+</details>
+
+#### 📱 Tính năng hỗ trợ shipper
+
+<details>
+<summary><b>🗺️ Hỗ trợ định vị và điều hướng</b></summary>
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem bản đồ | 🗺️ | Hiển thị vị trí khách hàng trên bản đồ |
+| Chỉ đường | 🧭 | Tích hợp Google Maps chỉ đường |
+| Lộ trình tối ưu | ⚡ | Gợi ý lộ trình giao hàng hiệu quả |
+| Đánh dấu đã giao | 📌 | Đánh dấu các điểm đã giao thành công |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>📞 Liên hệ khách hàng</b></summary>
+
+```mermaid
+graph TD
+    A[Cần liên hệ KH] --> B{Phương thức}
+    B --> C[Gọi điện]
+    B --> D[Nhắn tin SMS]
+    B --> E[Chat trong app]
+    C --> F[Ghi chú cuộc gọi]
+    D --> G[Mẫu tin nhắn có sẵn]
+    E --> H[Chat real-time]
+    F --> I[Lưu thông tin]
+    G --> I
+    H --> I
+```
+
+> 💡 **Mẫu tin nhắn tự động:**
+> - "Tôi là shipper, đang đến giao đơn hàng [MÃ ĐƠN]"
+> - "Tôi đã đến địa chỉ, xin gặp anh/chị để giao hàng"
+> - "Không liên lạc được, tôi sẽ quay lại sau 30 phút"
+
+</details>
+
+#### 📊 Báo cáo và thống kê
+
+<details>
+<summary><b>📈 Hiệu suất giao hàng</b></summary>
+
+<div align="center">
+
+| Chỉ số | Mô tả | Mục tiêu |
+|--------|-------|----------|
+| Số đơn giao/ngày | Tổng số đơn đã giao | > 20 đơn |
+| Tỷ lệ thành công | % đơn giao thành công | > 95% |
+| Thời gian trung bình | Thời gian giao mỗi đơn | < 45 phút |
+| Đánh giá KH | Điểm đánh giá từ KH | > 4.5/5 |
+
+</div>
+
+```mermaid
+graph LR
+    A[Thống kê ngày] --> B[Số đơn đã giao]
+    A --> C[Tỷ lệ thành công]
+    A --> D[Thời gian TB]
+    A --> E[Đánh giá KH]
+    B --> F[Báo cáo hiệu suất]
+    C --> F
+    D --> F
+    E --> F
+```
+
+</details>
+
+### 👨‍💼 Chủ cửa hàng (VENDOR)
+
+<details>
+<summary><b>📱 Xem hướng dẫn chi tiết cho chủ cửa hàng</b></summary>
+
+#### 🔐 Truy cập hệ thống
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[Truy cập trang đăng nhập] -->|Đăng nhập| B[Xác thực]
+    B -->|Thành công| C[Dashboard]
+    B -->|Thất bại| D[Thông báo lỗi]
+    D --> A
+```
+
+</div>
+
+#### 📦 Quản lý đơn hàng
+<div align="center">
+
+| Chức năng | Thao tác | Mô tả |
+|-----------|----------|--------|
+| 📋 Xem danh sách | Lọc & Tìm kiếm | Quản lý đơn hàng theo trạng thái, mã đơn, ngày |
+| ✅ Xác nhận đơn | Xử lý đơn mới | Kiểm tra và xác nhận thông tin đơn hàng |
+| 🖨️ In hóa đơn | Xuất hóa đơn | Tạo hóa đơn PDF cho đơn hàng |
+| 📝 Ghi chú | Thêm ghi chú | Cập nhật thông tin bổ sung cho đơn hàng |
+
+</div>
+
+#### 🚚 Quản lý giao hàng
+
+```mermaid
+graph TD
+    A[Đơn đã xác nhận] --> B[Cập nhật vận chuyển]
+    B --> C{Trạng thái}
+    C -->|Đang giao| D[Cập nhật thông tin shipper]
+    C -->|Đã giao| E[Xác nhận hoàn thành]
+    C -->|Hoàn hàng| F[Xử lý hoàn trả]
+    D --> G[Theo dõi]
+    E --> H[Hoàn tất đơn hàng]
+    F --> I[Cập nhật kho]
+```
+
+#### 📦 Quản lý sản phẩm
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem kho | 📊 | Kiểm tra tồn kho realtime |
+| Lọc sản phẩm | 🔍 | Tìm kiếm theo danh mục |
+| Cập nhật | ✏️ | Sửa thông tin sản phẩm |
+| Hình ảnh | 🖼️ | Quản lý ảnh sản phẩm |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình cập nhật sản phẩm</b></summary>
+
+```mermaid
+graph LR
+    A[Chọn sản phẩm] --> B[Cập nhật thông tin]
+    B --> C[Cập nhật giá]
+    C --> D[Cập nhật số lượng]
+    D --> E[Quản lý ảnh]
+    E --> F[Lưu thay đổi]
+```
+
+</details>
+
+#### ⭐ Quản lý đánh giá
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📝 | Hiển thị toàn bộ đánh giá từ khách hàng |
+| Tìm kiếm | 🔍 | Tìm theo tên khách hàng/sản phẩm |
+| Lọc thời gian | 📅 | Lọc đánh giá theo khoảng thời gian |
+| Tải file | 📁 | Tải xuống ảnh/video đính kèm |
+| Xóa đánh giá | 🗑️ | Xóa đánh giá không phù hợp |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý đánh giá</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C[Kiểm tra nội dung]
+    C --> D{Tác vụ}
+    D --> E[Tải ảnh/video]
+    D --> F[Xóa đánh giá]
+    E --> G[Hoàn tất]
+    F --> G
+```
+
+</details>
+
+#### 🎯 Quản lý khuyến mãi
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả chương trình khuyến mãi |
+| Thêm mới | ➕ | Tạo chương trình khuyến mãi mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin khuyến mãi |
+| Xóa | 🗑️ | Xóa chương trình khuyến mãi |
+| Tìm kiếm | 🔍 | Tìm theo mã khuyến mãi |
+| Lọc | 📊 | Lọc theo trạng thái, ngày áp dụng |
+| Nhập Excel | 📥 | Import danh sách khuyến mãi |
+| Xuất Excel | 📤 | Export dữ liệu ra file Excel |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý khuyến mãi</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Chi tiết]
+    C --> H[Nhập/Xuất Excel]
+    D --> I[Lưu thông tin]
+    E --> I
+    F --> I
+    H --> I
+    G --> B
+```
+
+</details>
+
+#### 📊 Lịch sử bán hàng
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả đơn hàng đã bán |
+| Xuất Excel | 📤 | Export lịch sử đơn hàng ra file Excel |
+| Theo dõi doanh thu | 💰 | Thống kê doanh thu theo thời gian thực |
+| Tìm kiếm | 🔍 | Tìm kiếm đơn hàng theo mã, tên KH |
+| Lọc | ⚙️ | Lọc theo trạng thái, ngày tạo, khoảng giá |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý lịch sử bán hàng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách đơn hàng] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Xem chi tiết đơn]
+    C --> E[Xuất Excel]
+    C --> F[Theo dõi doanh thu]
+    D --> G[Cập nhật trạng thái]
+    E --> H[Lưu file]
+    F --> I[Xem báo cáo]
+```
+
+</details>
+
+#### 💬 Hỗ trợ khách hàng
+<div align="center">
+
+| Nhiệm vụ | Thao tác | Trạng thái |
+|----------|----------|------------|
+| 📩 Tiếp nhận yêu cầu | Kiểm tra & phân loại | 🆕 Mới |
+| 💬 Trả lời khách hàng | Chat trực tiếp/Email | 🔄 Đang xử lý |
+| ✅ Xác nhận giải quyết | Cập nhật trạng thái | ✔️ Hoàn thành |
+
+</div>
+
+> 💡 **Mẹo hỗ trợ khách hàng:**
+> - ⚡ Phản hồi nhanh trong 5 phút
+> - 😊 Giao tiếp thân thiện, chuyên nghiệp
+> - 📝 Ghi chú lại các vấn đề quan trọng
+> - 📊 Theo dõi mức độ hài lòng
+
+</details>
+
+### 👨‍💻 Quản trị viên (ADMIN)
+
+<details>
+<summary><b>⚙️ Xem hướng dẫn chi tiết cho quản trị viên</b></summary>
+
+#### 📊 Dashboard & Thống kê
+
+<div align="center">
+
+```mermaid
+graph TD
+    A[Dashboard] --> B[Thống kê doanh thu]
+    A --> C[Quản lý đơn hàng]
+    A --> D[Phân tích bán hàng]
+    B --> E[Theo ngày/tháng/năm]
+    C --> F[Tổng số đơn hàng]
+    D --> G[Top sản phẩm]
+```
+
+</div>
+
+#### 📂 Quản lý danh mục
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị tất cả danh mục sản phẩm |
+| Thêm mới | ➕ | Tạo danh mục sản phẩm mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin danh mục |
+| Xóa | 🗑️ | Xóa danh mục sản phẩm |
+| Tìm kiếm | 🔍 | Tìm kiếm danh mục theo tên |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý danh mục</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Xem chi tiết]
+    D --> H[Lưu thông tin]
+    E --> H
+    F --> H
+    G --> B
+```
+
+</details>
+
+#### 🛍️ Quản lý sản phẩm (Toàn quyền)
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị toàn bộ sản phẩm |
+| Thêm mới | ➕ | Tạo sản phẩm hoàn toàn mới |
+| Chỉnh sửa | ✏️ | Cập nhật mọi thông tin sản phẩm |
+| Xóa | 🗑️ | Xóa vĩnh viễn sản phẩm |
+| Tìm kiếm | 🔍 | Tìm theo tên, mã SKU |
+| Lọc | ⚙️ | Lọc theo danh mục, trạng thái, kho |
+| Nhập Excel | 📥 | Import hàng loạt từ file Excel |
+| Xuất Excel | 📤 | Export dữ liệu sản phẩm ra Excel |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý sản phẩm</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Nhập/Xuất Excel]
+    C --> H[Xem chi tiết]
+    D --> I[Lưu thông tin]
+    E --> I
+    F --> I
+    G --> I
+```
+
+</details>
+
+#### 👥 Quản lý người dùng
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị toàn bộ người dùng |
+| Thêm mới | ➕ | Tạo tài khoản người dùng mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin người dùng |
+| Xóa | 🗑️ | Xóa tài khoản người dùng |
+| Cấp quyền | 🔐 | Phân quyền truy cập hệ thống |
+| Cập nhật trạng thái | 🔄 | Kích hoạt/Khóa tài khoản |
+| Tìm kiếm | 🔍 | Tìm theo tên, email, SĐT |
+| Lọc | ⚙️ | Lọc theo vai trò, trạng thái |
+| Xuất Excel | 📤 | Export dữ liệu người dùng |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý người dùng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm & Lọc]
+    B --> C{Thao tác}
+    C --> D[Thêm mới]
+    C --> E[Chỉnh sửa]
+    C --> F[Xóa]
+    C --> G[Cấp quyền]
+    C --> H[Cập nhật trạng thái]
+    C --> I[Xuất Excel]
+    D --> J[Lưu thông tin]
+    E --> J
+    F --> J
+    G --> J
+    H --> J
+```
+
+</details>
+
+<details>
+<summary><b>👤 Quản lý khách hàng</b></summary>
+
+<div align="center">
+
+| Chức năng | Mô tả chi tiết | Trạng thái |
+|-----------|----------------|------------|
+| **Thông tin tài khoản** | Xem & chỉnh sửa profile, lịch sử mua hàng | Đang hoạt động |
+| **Quản lý trạng thái** | Kích hoạt/Khóa tài khoản vi phạm | Đã khóa |
+| **Lịch sử giao dịch** | Theo dõi đơn hàng, điểm tích lũy | Đang chờ xử lý |
+
+</div>
+
+</details>
+
+#### 📦 Quản lý đơn hàng
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📋 | Hiển thị tất cả đơn hàng theo phương thức thanh toán |
+| Tìm kiếm | 🔍 | Tìm theo mã đơn, tên KH, SĐT |
+| Lọc đơn hàng | ⚙️ | Lọc theo trạng thái, ngày tạo, phương thức |
+| Cập nhật trạng thái | 🔄 | Thay đổi trạng thái đơn hàng |
+| Theo dõi đơn hàng | 📱 | Xem lịch sử cập nhật và vị trí |
+| Xem chi tiết | 👁️ | Xem thông tin chi tiết đơn hàng |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý đơn hàng</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách đơn hàng] --> B[Lọc theo PT thanh toán]
+    B --> C{COD}
+    B --> D{VietQR}
+    C --> E[Tìm kiếm & Lọc]
+    D --> E
+    E --> F{Thao tác}
+    F --> G[Cập nhật trạng thái]
+    F --> H[Theo dõi đơn]
+    F --> I[Xem chi tiết]
+    G --> J[Lưu thay đổi]
+    H --> K[Hiển thị lộ trình]
+```
+
+</details>
+
+<details>
+<summary><b>💰 Phân loại theo phương thức thanh toán</b></summary>
+
+<div align="center">
+
+| Phương thức | Icon | Trạng thái phổ biến | Xử lý |
+|-------------|------|---------------------|--------|
+| **COD** | 📦 | Chờ xác nhận, Đang giao, Thành công | Cập nhật trạng thái giao hàng |
+| **VietQR** | 💳 | Chờ thanh toán, Đã thanh toán, Đang giao | Xác nhận thanh toán tự động |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>🔄 Vòng đời đơn hàng</b></summary>
+
+```mermaid
+graph TD
+    A[Đơn hàng mới] --> B{Xác nhận PT thanh toán}
+    B -->|COD| C[Chờ xác nhận]
+    B -->|VietQR| D[Chờ thanh toán]
+    D --> E[Đã thanh toán]
+    C --> F[Đã xác nhận]
+    E --> F
+    F --> G[Đang đóng gói]
+    G --> H[Đang giao hàng]
+    H --> I[Giao thành công]
+    H --> J[Giao thất bại]
+    I --> K[Hoàn tất]
+    J --> L[Đơn hủy]
+```
+
+#### ⭐ Quản lý đánh giá toàn hệ thống
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 📝 | Hiển thị tất cả đánh giá từ mọi cửa hàng |
+| Tìm kiếm | 🔍 | Tìm theo tên KH, sản phẩm, cửa hàng |
+| Lọc đa điều kiện | ⚙️ | Lọc theo cửa hàng, sao, thời gian |
+| Tải file đính kèm | 📁 | Tải ảnh/video từ đánh giá |
+| Ẩn/Hiện đánh giá | 👁️ | Kiểm duyệt nội dung hiển thị |
+| Xóa đánh giá | 🗑️ | Xóa đánh giá vi phạm |
+| Phản hồi đánh giá | 💬 | Phản hồi đánh giá từ quản trị |
+| Xuất báo cáo | 📊 | Xuất Excel thống kê đánh giá |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý đánh giá</b></summary>
+
+```mermaid
+graph LR
+    A[Xem tất cả đánh giá] --> B[Lọc theo cửa hàng]
+    B --> C[Tìm kiếm đa điều kiện]
+    C --> D{Thao tác}
+    D --> E[Kiểm duyệt nội dung]
+    D --> F[Tải file đính kèm]
+    D --> G[Phản hồi đánh giá]
+    D --> H[Ẩn/Hiện đánh giá]
+    D --> I[Xóa đánh giá]
+    D --> J[Xuất báo cáo]
+    E --> K[Lưu thay đổi]
+    F --> K
+    G --> K
+    H --> K
+    I --> K
+    J --> K
+```
+
+</details>
+
+<details>
+<summary><b>🏪 Phân loại theo cửa hàng</b></summary>
+
+<div align="center">
+
+| Tiêu chí | Mô tả | Thao tác |
+|----------|-------|----------|
+| **Lọc cửa hàng** | Chọn 1 hoặc nhiều cửa hàng | Dropdown đa chọn |
+| **Đánh giá theo sao** | 1-5 sao, có thể lọc theo khoảng | ⭐⭐⭐⭐⭐ |
+| **Trạng thái hiển thị** | Đang hiển thị, Đã ẩn | Badge màu |
+| **Thời gian** | Theo ngày, tuần, tháng, quý | Date picker |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>🛡️ Quy trình kiểm duyệt</b></summary>
+
+```mermaid
+graph TD
+    A[Đánh giá mới từ cửa hàng] --> B{Kiểm tra nội dung}
+    B -->|Hợp lệ| C[Hiển thị công khai]
+    B -->|Vi phạm| D[Ẩn hoặc xóa]
+    C --> E[Gửi thông báo cho KH]
+    D --> F[Lưu nhật ký kiểm duyệt]
+```
+#### 🚚 Quản lý vận chuyển
+
+<div align="center">
+
+| Tính năng | Icon | Mô tả |
+|-----------|------|--------|
+| Xem danh sách | 👁️ | Hiển thị tất cả dịch vụ vận chuyển |
+| Thêm mới | ➕ | Thêm dịch vụ vận chuyển mới |
+| Chỉnh sửa | ✏️ | Cập nhật thông tin vận chuyển |
+| Xóa | 🗑️ | Xóa dịch vụ vận chuyển |
+| Tìm kiếm | 🔍 | Tìm theo tên dịch vụ, nhà cung cấp |
+| Sắp xếp | 📊 | Sắp xếp theo tên, phí vận chuyển |
+| Xem chi tiết | 📋 | Xem thông tin chi tiết dịch vụ |
+
+</div>
+
+<details>
+<summary><b>📝 Quy trình quản lý vận chuyển</b></summary>
+
+```mermaid
+graph LR
+    A[Xem danh sách] --> B[Tìm kiếm]
+    B --> C[Sắp xếp]
+    C --> D{Thao tác}
+    D --> E[Thêm mới]
+    D --> F[Chỉnh sửa]
+    D --> G[Xóa]
+    D --> H[Xem chi tiết]
+    E --> I[Lưu thông tin]
+    F --> I
+    G --> I
+    H --> B
+```
+
+</details>
+
+<details>
+<summary><b>📦 Thông tin dịch vụ vận chuyển</b></summary>
+
+<div align="center">
+
+| Thông tin | Mô tả | Bắt buộc |
+|-----------|-------|----------|
+| **Tên dịch vụ** | Tên nhà vận chuyển (GHTK, GHN, Viettel Post...) | ✅ |
+| **Phí vận chuyển** | Chi phí cho mỗi đơn hàng | ✅ |
+| **Thời gian giao** | Số ngày dự kiến giao hàng | ✅ |
+| **Khu vực áp dụng** | Phạm vi giao hàng (Toàn quốc/Từng khu vực) | ✅ |
+| **Trạng thái** | Đang hoạt động/Tạm dừng | ✅ |
+| **Mô tả** | Thông tin bổ sung về dịch vụ | ❌ |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>💰 Sắp xếp theo chi phí</b></summary>
+
+```mermaid
+graph TD
+    A[Danh sách vận chuyển] --> B{Sắp xếp theo}
+    B --> C[Phí tăng dần]
+    B --> D[Phí giảm dần]
+    B --> E[Tên A-Z]
+    B --> F[Tên Z-A]
+    C --> G[Hiển thị kết quả]
+    D --> G
+    E --> G
+    F --> G
+```
+
+## Yêu cầu hệ thống
+- Java Development Kit (JDK) 8 trở lên
+- Maven
+- SQL Server
+- IDE (khuyến nghị sử dụng Eclipse hoặc IntelliJ IDEA)
+
+## Cài đặt và Chạy ứng dụng
+
+### 1. Cấu hình Database
+1. Tạo database trong SQL Server
+2. Cập nhật thông tin kết nối database trong file `application.properties`:
+   ```properties
+   spring.datasource.url=jdbc:sqlserver://[YOUR_SERVER_NAME]:1433;databaseName=[YOUR_DATA]
+   spring.datasource.username=sa
+   spring.datasource.password=[YOUR_PASS]
+   ```
+
+### 2. Chạy ứng dụng
+1. Clone repository về máy
+2. Mở terminal/command prompt tại thư mục dự án
+3. Chạy lệnh: `mvn spring-boot:run`
+4. Truy cập ứng dụng tại: `http://localhost:8080`
+
+## Các chức năng chính
+
+### 1. Quản lý người dùng
+- **Đăng ký tài khoản**: 
+  - Truy cập `/register`
+  - Điền thông tin cá nhân
+  - Xác thực email thông qua mã OTP được gửi đến email đăng ký
+
+- **Đăng nhập**: 
+  - Truy cập `/login`
+  - Đăng nhập bằng email và mật khẩu
+  - Hệ thống sử dụng JWT token để xác thực
+
+### 2. Quản lý sản phẩm
+- Xem danh sách sản phẩm
+- Tìm kiếm sản phẩm
+- Lọc sản phẩm theo danh mục
+- Xem chi tiết sản phẩm
+
+### 3. Giỏ hàng và Đặt hàng
+- Thêm sản phẩm vào giỏ hàng
+- Cập nhật số lượng sản phẩm
+- Xóa sản phẩm khỏi giỏ hàng
+- Đặt hàng và chọn phương thức thanh toán
+
+### 4. Thanh toán
+#### Thanh toán qua VietQR
+1. Chọn phương thức thanh toán VietQR
+2. Xem chi tiết hóa đơn thanh toán
+3. Được chuyển đến cổng thanh toán VietQR
+4. Hoàn tất thanh toán và chờ redirect về trang callback
+
+### 5. Quản lý đơn hàng
+- Xem lịch sử đơn hàng
+- Theo dõi trạng thái đơn hàng
+- Hủy đơn hàng (nếu chưa xử lý)
+
+### 6. Tính năng Admin
+- Quản lý danh mục sản phẩm
+- Quản lý sản phẩm (thêm, sửa, xóa)
+- Quản lý đơn hàng
+- Quản lý người dùng
+- Quản lý đánh giá
+- Quản lý vận chuyển
+- Xem thống kê và báo cáo
+
+### 7. Tính năng Vendor
+- Quản lý sản phẩm (thêm, sửa, xóa)
+- Quản lý đơn hàng
+- Quản lý đánh giá
+- Quản lý khuyến mãi
+- Tương tác với người dùng
+- Xem thống kê và báo cáo
+
+### 8. Tính năng Shipper
+- Xác nhận đơn hàng
+- Cập nhật trạng thái đơn hàng
   
-  2. Chọn phương thức vận chuyển:
-     - So sánh các đơn vị:
-       + Phí vận chuyển
-       + Thời gian dự kiến
-       + Đánh giá dịch vụ
-     - Xem chi tiết dịch vụ
-     - Chọn phương thức phù hợp
-
-  3. Áp dụng khuyến mãi:
-     - Nhập mã giảm giá
-     - Kiểm tra điều kiện:
-       + Giá trị đơn tối thiểu
-       + Thời hạn sử dụng
-       + Số lượng còn lại
-     - Hiển thị số tiền giảm
-
-  4. Thanh toán:
-     a. Thanh toán khi nhận hàng (COD):
-        - Xác nhận thông tin
-        - Tạo phiếu thu COD
-     b. Chuyển khoản qua VietQR:
-        - Hiển thị mã QR
-        - Thông tin tài khoản:
-          + Tên ngân hàng: Agribank
-          + Số tài khoản
-          + Tên người thụ hưởng
-          + Nội dung chuyển khoản
-        - Theo dõi trạng thái
-     c. Ví điện tử/Thẻ:
-        - Chuyển đến cổng thanh toán
-        - Xác thực giao dịch
-
-  5. Hoàn tất đặt hàng:
-     - Tạo mã đơn hàng
-     - Tính tổng thanh toán:
-       + Tiền hàng
-       + Phí vận chuyển
-       + Giảm giá
-     - Gửi email xác nhận
-     - Chuyển đến trang theo dõi
-
-- **Luồng thay thế**:
-  1. Thanh toán nhiều đơn:
-     - Gộp đơn hàng
-     - Thanh toán một lần
-  2. Lưu giỏ hàng:
-     - Để mua sau
-     - Chờ mã giảm giá
-
-- **Luồng ngoại lệ**:
-  1. Thanh toán thất bại:
-     - Ghi nhận lỗi
-     - Cho phép thử lại
-     - Đổi phương thức
-  2. Sản phẩm hết hàng:
-     - Thông báo người dùng
-     - Đề xuất thay thế
-  3. Mã giảm giá lỗi:
-     - Hiển thị lý do
-     - Đề xuất mã khác
-  4. Địa chỉ không hỗ trợ:
-     - Thông báo vùng
-     - Yêu cầu đổi địa chỉ
-
-### 4.3. Đánh giá và Phản hồi
-- **Mô tả**: Hệ thống đánh giá sản phẩm và cửa hàng
-- **Tác nhân**: User
-- **Điều kiện trước**: Đã nhận hàng thành công
-- **Luồng chính**:
-  1. Đánh giá sản phẩm:
-     - Chọn sản phẩm:
-       + Từ đơn hàng
-       + Từ lịch sử mua
-     - Viết đánh giá:
-       + Chọn số sao (1-5)
-       + Viết nhận xét
-       + Đăng ảnh/video
-     - Cập nhật đánh giá:
-       + Chỉnh sửa nội dung
-       + Thêm/xóa media
-       + Phản hồi vendor
-
-  2. Đánh giá cửa hàng:
-     - Tiêu chí đánh giá:
-       + Chất lượng sản phẩm
-       + Dịch vụ khách hàng
-       + Tốc độ phản hồi
-       + Đóng gói giao hàng
-     - Thông tin chi tiết:
-       + Rating 1-5 sao
-       + Bình luận (10-1000 ký tự)
-       + Gắn với đơn hàng cụ thể
-     - Hiển thị đánh giá:
-       + Tổng hợp rating
-       + Lọc theo thời gian
-       + Sắp xếp theo mức độ
-
-  3. Quản lý phản hồi:
-     - Tương tác:
-       + Xem phản hồi shop
-       + Trả lời bình luận
-       + Cập nhật đánh giá
-     - Báo cáo vi phạm:
-       + Nội dung không phù hợp
-       + Thông tin sai lệch
-       + Spam/quấy rối
-
-- **Luồng thay thế**:
-  1. Đánh giá nhanh:
-     - Chỉ chọn số sao
-     - Dùng mẫu có sẵn
-  2. Gửi riêng cho shop:
-     - Feedback nội bộ
-     - Không hiển thị công khai
-
-- **Luồng ngoại lệ**:
-  1. Đơn hàng không hợp lệ:
-     - Chưa hoàn thành
-     - Đã quá hạn đánh giá
-     - Đã đánh giá trước đó
-  2. Nội dung vi phạm:
-     - Từ khóa cấm
-     - Hình ảnh không phù hợp
-     - Thông tin cá nhân
-  3. Tranh chấp đánh giá:
-     - Shop khiếu nại
-     - Người dùng khiếu nại
-     - Xác minh thông tin
-
-## 5. Chức năng Shipper
-
-### 5.1. Quản lý Vận chuyển và Giao hàng
-- **Mô tả**: Quy trình xử lý vận chuyển đơn hàng
-- **Tác nhân**: Shipper
-- **Điều kiện trước**: 
-  - Đăng nhập với quyền Shipper
-  - Được phân công đơn hàng
-- **Luồng chính**:
-  1. Tiếp nhận và xử lý đơn hàng:
-     - Xem danh sách đơn:
-       + Thông tin chi tiết
-       + Địa chỉ giao nhận
-       + Yêu cầu đặc biệt
-     - Lập kế hoạch giao:
-       + Sắp xếp lộ trình
-       + Ước tính thời gian
-       + Tối ưu quãng đường
-
-  2. Quy trình lấy hàng:
-     - Tại cửa hàng:
-       + Quét mã QR đơn hàng
-       + Kiểm tra sản phẩm
-       + Xác nhận với shop
-     - Cập nhật trạng thái:
-       + Đã lấy hàng
-       + Bắt đầu giao
-       + Ghi chú đặc biệt
-
-  3. Quy trình giao hàng:
-     - Liên hệ khách hàng:
-       + Xác nhận địa chỉ
-       + Thông báo thời gian
-       + Hướng dẫn kiểm tra
-     - Xác nhận giao hàng:
-       + Thu tiền (nếu COD)
-       + Chụp ảnh bằng chứng
-       + Lấy chữ ký (nếu cần)
-     - Hoàn tất giao hàng:
-       + Cập nhật trạng thái
-       + Đồng bộ hệ thống
-       + Báo cáo hoàn thành
-
-  4. Xử lý tình huống đặc biệt:
-     - Không giao được:
-       + Ghi nhận lý do
-       + Chụp ảnh hiện trường
-       + Liên hệ hỗ trợ
-     - Khách từ chối nhận:
-       + Lập biên bản
-       + Xác nhận với khách
-       + Báo cáo hệ thống
-     - Hàng bị hư hỏng:
-       + Đánh giá thiệt hại
-       + Chụp ảnh bằng chứng
-       + Xử lý theo quy trình
-
-- **Luồng thay thế**:
-  1. Giao hàng hẹn giờ:
-     - Lên lịch cụ thể
-     - Nhắc nhở tự động
-  2. Giao lại lần 2:
-     - Xác nhận thời gian
-     - Cập nhật lộ trình
-
-- **Luồng ngoại lệ**:
-  1. Liên hệ thất bại:
-     - Ghi nhận số lần gọi
-     - Chờ theo quy định
-     - Báo hỗ trợ xử lý
-  2. Địa chỉ không chính xác:
-     - Xác minh lại thông tin
-     - Liên hệ người đặt
-     - Điều chỉnh lộ trình
-  3. Sự cố phương tiện:
-     - Báo cáo ngay lập tức
-     - Chuyển đơn nếu cần
-     - Thông báo các bên
-
-### 5.2. Theo dõi lộ trình
-- **Mô tả**: Cập nhật vị trí và lộ trình giao hàng
-- **Tác nhân**: Shipper
-- **Điều kiện trước**: Có đơn hàng đang giao
-- **Luồng chính**:
-  1. Bắt đầu hành trình
-  2. Cập nhật vị trí real-time
-  3. Ghi nhận điểm dừng
-  4. Hoàn thành hành trình
-- **Luồng ngoại lệ**:
-  - GPS không hoạt động
-  - Lỗi kết nối
-
-### 5.3. Chat với khách hàng
-- **Mô tả**: Liên lạc với khách hàng
-- **Tác nhân**: Shipper
-- **Điều kiện trước**: Có đơn hàng đang giao
-- **Luồng chính**:
-  1. Chọn đơn hàng cần liên hệ
-  2. Gửi tin nhắn
-  3. Nhận phản hồi
-  4. Kết thúc cuộc trò chuyện
-- **Luồng ngoại lệ**:
-  - Khách hàng không phản hồi
-  - Lỗi kết nối
-
-## 6. Quy trình Khiếu nại và Hoàn tiền
-
-### 6.1. Xử lý Khiếu nại
-- **Mô tả**: Quy trình xử lý khiếu nại và tranh chấp
-- **Tác nhân**: User, Vendor, Admin
-- **Điều kiện trước**: Có đơn hàng phát sinh vấn đề
-- **Luồng chính**:
-  1. Tạo khiếu nại:
-     - Thông tin khiếu nại:
-       + Chọn đơn hàng
-       + Loại vấn đề
-       + Mô tả chi tiết
-     - Bằng chứng:
-       + Upload hình ảnh
-       + Video quay lại
-       + Hóa đơn liên quan
-     - Yêu cầu giải quyết:
-       + Hoàn tiền
-       + Đổi/trả hàng
-       + Bồi thường
-
-  2. Xử lý khiếu nại:
-     - Tiếp nhận:
-       + Phân loại mức độ
-       + Chuyển bộ phận
-       + Hẹn thời gian
-     - Điều tra:
-       + Thu thập thông tin
-       + Xác minh bằng chứng
-       + Liên hệ các bên
-     - Phương án giải quyết:
-       + Đề xuất giải pháp
-       + Thương lượng
-       + Ra quyết định
-
-  3. Hoàn tất xử lý:
-     - Thực hiện giải pháp:
-       + Hoàn tiền nếu cần
-       + Đổi/trả hàng
-       + Bồi thường thiệt hại
-     - Cập nhật hệ thống:
-       + Trạng thái khiếu nại
-       + Lịch sử xử lý
-       + Đánh giá kết quả
-
-### 6.2. Quy trình Hoàn tiền
-- **Mô tả**: Xử lý yêu cầu và thực hiện hoàn tiền
-- **Tác nhân**: Admin, Vendor
-- **Điều kiện trước**: Có yêu cầu hoàn tiền hợp lệ
-- **Luồng chính**:
-  1. Xác nhận yêu cầu:
-     - Kiểm tra điều kiện:
-       + Thời gian yêu cầu
-       + Lý do hoàn tiền
-       + Trạng thái đơn hàng
-     - Tính toán số tiền:
-       + Giá trị hoàn
-       + Phí phát sinh
-       + Khấu trừ (nếu có)
-
-  2. Thực hiện hoàn tiền:
-     - Theo phương thức:
-       + Hoàn vào ví điện tử
-       + Chuyển khoản ngân hàng
-       + Hoàn về thẻ gốc
-     - Quy trình hoàn:
-       + Tạo lệnh hoàn tiền
-       + Xác nhận giao dịch
-       + Thông báo các bên
-
-  3. Theo dõi và xác nhận:
-     - Kiểm tra giao dịch:
-       + Trạng thái hoàn tiền
-       + Thời gian xử lý
-       + Biên bản xác nhận
-     - Thông báo kết quả:
-       + Email thông báo
-       + Cập nhật trạng thái
-       + Lưu hồ sơ
-
-- **Luồng thay thế**:
-  1. Hoàn tiền một phần:
-     - Tính toán tỷ lệ
-     - Xác nhận với khách
-  2. Hoàn tiền theo đợt:
-     - Chia thành nhiều lần
-     - Lập lịch hoàn tiền
-
-- **Luồng ngoại lệ**:
-  1. Thông tin không hợp lệ:
-     - Tài khoản sai
-     - Thiếu thông tin
-     - Yêu cầu bổ sung
-  2. Lỗi giao dịch:
-     - Hoàn tiền thất bại
-     - Tài khoản bị khóa
-     - Xử lý thủ công
-  3. Tranh chấp hoàn tiền:
-     - Khiếu nại số tiền
-     - Thời gian xử lý
-     - Chuyển bộ phận pháp lý
-
-## 7. Bảo mật và Quản lý Phiên
-
-### 7.1. Hệ thống Xác thực
-- **Mô tả**: Quản lý xác thực và bảo mật người dùng
-- **Tác nhân**: Tất cả
-- **Điều kiện trước**: Không
-- **Luồng chính**:
-  1. Xác thực JWT:
-     - Tạo token:
-       + Sau khi đăng nhập
-       + Chứa thông tin user
-       + Thời gian hết hạn
-     - Kiểm tra token:
-       + Validate signature
-       + Kiểm tra hết hạn
-       + Xác thực quyền
-     - Refresh token:
-       + Tự động làm mới
-       + Giữ phiên đăng nhập
-       + Xử lý hết hạn
-
-  2. Quản lý phiên:
-     - Theo dõi hoạt động:
-       + Thời gian đăng nhập
-       + IP truy cập
-       + Thiết bị sử dụng
-     - Kiểm soát truy cập:
-       + Phân quyền chi tiết
-       + Giới hạn truy cập
-       + Chặn IP đáng ngờ
-     - Đăng xuất:
-       + Thủ công
-       + Tự động sau thời gian
-       + Đồng bộ đa thiết bị
-
-  3. Bảo mật nâng cao:
-     - Mã hóa dữ liệu:
-       + Thông tin người dùng
-       + Dữ liệu thanh toán
-       + Tin nhắn riêng tư
-     - Chống tấn công:
-       + CSRF protection
-       + XSS prevention
-       + SQL injection
-     - Giám sát hệ thống:
-       + Log hoạt động
-       + Cảnh báo bất thường
-       + Backup dữ liệu
-
-- **Luồng thay thế**:
-  1. Xác thực hai lớp:
-     - SMS OTP
-     - Email verification
-     - Authenticator app
-  2. Single Sign-On:
-     - Đăng nhập Google
-     - Đăng nhập Facebook
-     - Đăng nhập Apple
-
-- **Luồng ngoại lệ**:
-  1. Token không hợp lệ:
-     - Thông báo lỗi
-     - Yêu cầu đăng nhập lại
-     - Ghi log sự cố
-  2. Truy cập bất thường:
-     - Khóa tài khoản tạm thời
-     - Thông báo email
-     - Yêu cầu xác minh
-  3. Tấn công bảo mật:
-     - Phát hiện và chặn
-     - Thông báo admin
-     - Tăng cường bảo vệ
-
-## 8. Tính năng Realtime
-
-### 8.1. Chat Realtime
-- **Mô tả**: Hệ thống chat realtime qua WebSocket
-- **Tác nhân**: Tất cả người dùng
-- **Điều kiện trước**: Đã đăng nhập
-- **Luồng chính**:
-  1. Thiết lập kết nối:
-     - Khởi tạo WebSocket:
-       + Xác thực người dùng
-       + Tạo kết nối an toàn
-       + Duy trì phiên
-     - Quản lý trạng thái:
-       + Online/Offline
-       + Đang nhập tin nhắn
-       + Đã xem tin nhắn
-
-  2. Gửi/nhận tin nhắn:
-     - Xử lý tin nhắn:
-       + Gửi nội dung text
-       + Upload file/hình ảnh
-       + Gửi emoji/sticker
-     - Thông báo realtime:
-       + Tin nhắn mới
-       + Đã đọc tin nhắn
-       + Đang nhập tin nhắn
-     - Lưu trữ và đồng bộ:
-       + Lưu vào database
-       + Đồng bộ đa thiết bị
-       + Backup tin nhắn
-
-  3. Quản lý chat room:
-     - Tạo cuộc trò chuyện:
-       + Chat 1-1 
-       + Chat nhóm
-       + Chat với cửa hàng
-     - Tính năng nâng cao:
-       + Tìm kiếm tin nhắn
-       + Lọc theo thời gian
-       + Xuất lịch sử chat
-
-### 8.2. Theo dõi Đơn hàng Realtime
-- **Mô tả**: Cập nhật trạng thái đơn hàng realtime
-- **Tác nhân**: User, Vendor, Shipper
-- **Điều kiện trước**: Có đơn hàng đang xử lý
-- **Luồng chính**:
-  1. Cập nhật trạng thái:
-     - Vendor xử lý:
-       + Nhận đơn mới
-       + Đóng gói hàng
-       + Bàn giao shipper
-     - Shipper giao hàng:
-       + Cập nhật vị trí
-       + Thời gian dự kiến
-       + Xác nhận giao hàng
-     - User theo dõi:
-       + Nhận thông báo
-       + Xem vị trí realtime
-       + Tương tác với shipper
-
-  2. Thông báo tự động:
-     - Cập nhật trạng thái:
-       + Push notification
-       + Email thông báo
-       + SMS (với sự kiện quan trọng)
-     - Cảnh báo:
-       + Giao hàng trễ
-       + Thay đổi địa chỉ
-       + Yêu cầu hủy đơn
-
-### 8.3. Thông báo Realtime
-- **Mô tả**: Hệ thống thông báo realtime
-- **Tác nhân**: Tất cả
-- **Điều kiện trước**: Đã đăng nhập
-- **Luồng chính**:
-  1. Quản lý thông báo:
-     - Phân loại:
-       + Đơn hàng
-       + Khuyến mãi
-       + Hệ thống
-       + Tương tác
-     - Độ ưu tiên:
-       + Khẩn cấp
-       + Quan trọng
-       + Thông thường
-
-  2. Gửi thông báo:
-     - Đa kênh:
-       + WebSocket
-       + Push notification
-       + Email
-       + SMS
-     - Tùy chỉnh:
-       + Theo sở thích
-       + Theo thời gian
-       + Theo loại thông báo
-
-- **Luồng ngoại lệ**:
-  1. Mất kết nối:
-     - Tự động kết nối lại
-     - Cache dữ liệu offline
-     - Đồng bộ khi online
-  2. Quá tải hệ thống:
-     - Giới hạn tần suất
-     - Load balancing
-     - Thông báo bảo trì
-
-## 9. Hệ thống Thanh toán Đa cổng
-
-### 9.1. Tích hợp Cổng thanh toán
-- **Mô tả**: Quản lý và xử lý thanh toán qua nhiều cổng
-- **Tác nhân**: User, Admin
-- **Điều kiện trước**: Có đơn hàng cần thanh toán
-- **Luồng chính**:
-  1. Thanh toán qua Momo:
-     - Khởi tạo giao dịch:
-       + Tạo mã đơn hàng
-       + Tính tổng tiền
-       + Tạo QR code
-     - Xử lý thanh toán:
-       + Chuyển đến Momo
-       + Xác thực giao dịch
-       + Nhận kết quả
-     - Hoàn tất:
-       + Cập nhật trạng thái
-       + Gửi biên nhận
-       + Lưu lịch sử
-
-  2. Thanh toán qua VNPay:
-     - Tạo giao dịch:
-       + Sinh mã giao dịch
-       + Tạo URL thanh toán
-       + Chuyển hướng user
-     - Xử lý callback:
-       + Kiểm tra chữ ký
-       + Xác nhận kết quả
-       + Cập nhật đơn hàng
-     - Thông báo:
-       + Gửi email xác nhận
-       + Cập nhật ví điện tử
-       + Lưu trữ hóa đơn
-
-  3. Thanh toán qua VietQR:
-     - Tạo mã QR:
-       + Thông tin ngân hàng
-       + Số tiền thanh toán
-       + Nội dung chuyển khoản
-     - Theo dõi giao dịch:
-       + Kiểm tra biến động
-       + Đối chiếu thông tin
-       + Xác nhận thanh toán
-     - Hoàn tất:
-       + Cập nhật trạng thái
-       + Thông báo các bên
-       + Xuất hóa đơn
-
-### 9.2. Quản lý Giao dịch
-- **Mô tả**: Theo dõi và quản lý các giao dịch thanh toán
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Có giao dịch trong hệ thống
-- **Luồng chính**:
-  1. Theo dõi giao dịch:
-     - Xem danh sách:
-       + Giao dịch mới
-       + Đang xử lý
-       + Hoàn thành/Thất bại
-     - Chi tiết giao dịch:
-       + Thông tin thanh toán
-       + Lịch sử trạng thái
-       + Log giao dịch
-     - Thống kê:
-       + Theo cổng thanh toán
-       + Theo thời gian
-       + Theo trạng thái
-
-  2. Xử lý ngoại lệ:
-     - Giao dịch lỗi:
-       + Phát hiện vấn đề
-       + Phân tích nguyên nhân
-       + Xử lý thủ công
-     - Giao dịch treo:
-       + Kiểm tra trạng thái
-       + Liên hệ đối tác
-       + Cập nhật thủ công
-     - Hoàn tiền:
-       + Tạo lệnh hoàn
-       + Theo dõi tiến trình
-       + Thông báo khách hàng
-
-- **Luồng thay thế**:
-  1. Thanh toán thủ công:
-     - Xác nhận chuyển khoản
-     - Cập nhật trạng thái
-  2. Chia đợt thanh toán:
-     - Tạo lịch thanh toán
-     - Theo dõi từng đợt
-
-- **Luồng ngoại lệ**:
-  1. Lỗi cổng thanh toán:
-     - Chuyển cổng dự phòng
-     - Thông báo bảo trì
-     - Log sự cố
-  2. Gian lận thanh toán:
-     - Phát hiện bất thường
-     - Tạm khóa giao dịch
-     - Điều tra xử lý
-  3. Timeout giao dịch:
-     - Hủy giao dịch
-     - Thông báo user
-     - Tạo giao dịch mới
-
-## 10. Quản lý Sản phẩm Chuyên biệt
-
-### 10.1. Quản lý Thú cưng
-- **Mô tả**: Chức năng đặc biệt cho sản phẩm thú cưng
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có cửa hàng thú cưng
-- **Luồng chính**:
-  1. Thêm thú cưng:
-     - Thông tin cơ bản:
-       + Loài/giống
-       + Tuổi/giới tính
-       + Nguồn gốc/xuất xứ
-     - Thông tin sức khỏe:
-       + Tiêm chủng
-       + Giấy khám bệnh
-       + Tình trạng sức khỏe
-     - Đặc điểm:
-       + Tính cách
-       + Huấn luyện
-       + Yêu cầu chăm sóc
-
-  2. Quản lý thú cưng:
-     - Theo dõi sức khỏe:
-       + Lịch tiêm chủng
-       + Khám định kỳ
-       + Chế độ ăn
-     - Quy trình bán:
-       + Kiểm tra người mua
-       + Tư vấn chăm sóc
-       + Hỗ trợ sau bán
-     - Dịch vụ đi kèm:
-       + Khám thú y
-       + Phụ kiện
-       + Thức ăn
-
-### 10.2. Quản lý Biến thể Sản phẩm
-- **Mô tả**: Quản lý các phiên bản của sản phẩm
-- **Tác nhân**: Vendor
-- **Điều kiện trước**: Có sản phẩm cần tạo biến thể
-- **Luồng chính**:
-  1. Tạo biến thể:
-     - Thuộc tính:
-       + Màu sắc
-       + Kích thước
-       + Phiên bản
-     - Giá và tồn kho:
-       + Giá riêng
-       + Số lượng
-       + Mã SKU
-     - Media:
-       + Hình ảnh riêng
-       + Video demo
-       + Thông số kỹ thuật
-
-  2. Quản lý bán hàng:
-     - Theo dõi tồn kho:
-       + Theo biến thể
-       + Cảnh báo hết hàng
-       + Đồng bộ số lượng
-     - Báo cáo:
-       + Thống kê bán hàng
-       + So sánh biến thể
-       + Xu hướng mua
-
-### 10.3. Hệ thống Đánh giá Nâng cao
-- **Mô tả**: Quản lý đánh giá chi tiết sản phẩm
-- **Tác nhân**: User, Vendor
-- **Điều kiện trước**: Có giao dịch hoàn thành
-- **Luồng chính**:
-  1. Đánh giá chi tiết:
-     - Tiêu chí:
-       + Chất lượng
-       + Giá trị
-       + Dịch vụ
-     - Media:
-       + Hình thực tế
-       + Video review
-       + So sánh mô tả
-     - Phản hồi:
-       + Like/Dislike
-       + Bình luận phụ
-       + Chia sẻ
-
-  2. Phân tích đánh giá:
-     - Thống kê:
-       + Điểm trung bình
-       + Phân bố sao
-       + Từ khóa phổ biến
-     - Xu hướng:
-       + Theo thời gian
-       + Theo nhóm khách
-       + Theo khu vực
-
-- **Luồng ngoại lệ**:
-  1. Sản phẩm đặc biệt:
-     - Yêu cầu giấy phép
-     - Hạn chế địa lý
-     - Quy định riêng
-  2. Lỗi đồng bộ:
-     - Số lượng không khớp
-     - Giá không đồng nhất
-     - Thông tin mâu thuẫn
-  3. Vi phạm quy định:
-     - Sản phẩm cấm
-     - Thông tin sai lệch
-     - Đánh giá giả
-
-## 11. Tìm kiếm và Khám phá
-
-### 11.1. Tìm kiếm Thông minh
-- **Mô tả**: Hệ thống tìm kiếm với gợi ý và đề xuất
-- **Tác nhân**: Tất cả người dùng
-- **Điều kiện trước**: Không
-- **Luồng chính**:
-  1. Tìm kiếm nhanh:
-     - Gợi ý tức thời:
-       + Hiển thị khi gõ
-       + Tối đa 10 kết quả
-       + Kèm hình ảnh/giá
-     - Đề xuất thông minh:
-       + Sản phẩm liên quan
-       + 6 đề xuất hàng đầu
-       + Dựa trên độ phù hợp
-     - Xử lý đa ngôn ngữ:
-       + Hỗ trợ tiếng Việt
-       + Bỏ dấu thông minh
-       + URL encoding
-
-  2. Tìm kiếm nâng cao:
-     - Bộ lọc:
-       + Theo danh mục
-       + Khoảng giá
-       + Đánh giá
-       + Tình trạng hàng
-     - Sắp xếp:
-       + Giá tăng/giảm
-       + Mới nhất
-       + Bán chạy
-       + Đánh giá cao
-     - Kết quả:
-       + Phân trang
-       + Hiển thị grid/list
-       + Thông tin chi tiết
-
-  3. Lịch sử và Đề xuất:
-     - Lịch sử tìm kiếm:
-       + Lưu từ khóa
-       + Tìm kiếm gần đây
-       + Xóa lịch sử
-     - Đề xuất cá nhân:
-       + Dựa trên lịch sử
-       + Sở thích người dùng
-       + Xu hướng chung
-
-### 11.2. Khám phá Sản phẩm
-- **Mô tả**: Tính năng giúp người dùng khám phá sản phẩm
-- **Tác nhân**: User
-- **Điều kiện trước**: Không
-- **Luồng chính**:
-  1. Trang chủ thông minh:
-     - Sections động:
-       + Sản phẩm nổi bật
-       + Deal hot
-       + Xu hướng mua sắm
-     - Cá nhân hóa:
-       + Dựa trên lịch sử
-       + Theo sở thích
-       + Theo mùa/sự kiện
-
-  2. Danh mục thông minh:
-     - Phân loại:
-       + Theo ngành hàng
-       + Theo nhãn hiệu
-       + Theo đặc tính
-     - Điều hướng:
-       + Menu đa cấp
-       + Quick links
-       + Tags phổ biến
-
-  3. Gợi ý mua sắm:
-     - Sản phẩm liên quan:
-       + Cùng danh mục
-       + Thường mua cùng
-       + Có thể thích
-     - Combo deals:
-       + Gói sản phẩm
-       + Mua kèm giảm giá
-       + Set quà tặng
-
-- **Luồng ngoại lệ**:
-  1. Không có kết quả:
-     - Gợi ý thay thế
-     - Sửa lỗi chính tả
-     - Mở rộng tìm kiếm
-  2. Quá tải hệ thống:
-     - Cache kết quả
-     - Giới hạn requests
-     - Tối ưu truy vấn
-  3. Kết quả không phù hợp:
-     - Báo cáo nội dung
-     - Điều chỉnh thuật toán
-     - Feedback người dùng
-
-## 12. Báo cáo và Phân tích
-
-### 12.1. Báo cáo Doanh thu
-- **Mô tả**: Hệ thống báo cáo tổng hợp doanh thu
-- **Tác nhân**: Admin, Vendor
-- **Điều kiện trước**: Có dữ liệu giao dịch
-- **Luồng chính**:
-  1. Báo cáo tổng quan:
-     - Doanh thu:
-       + Theo ngày/tuần/tháng
-       + So sánh các kỳ
-       + Biểu đồ tăng trưởng
-     - Chi tiết giao dịch:
-       + Theo phương thức
-       + Theo cửa hàng
-       + Theo sản phẩm
-     - Phân tích xu hướng:
-       + Dự báo doanh thu
-       + Mùa cao điểm
-       + Hiệu quả khuyến mãi
-
-  2. Báo cáo chi tiết:
-     - Theo cửa hàng:
-       + Top doanh thu
-       + Tỷ lệ hoàn đơn
-       + ROI marketing
-     - Theo sản phẩm:
-       + Best sellers
-       + Tồn kho cao
-       + Biên lợi nhuận
-     - Theo khách hàng:
-       + Phân khúc khách
-       + Giá trị đơn TB
-       + Tần suất mua
-
-### 12.2. Phân tích Hoạt động
-- **Mô tả**: Phân tích chi tiết hoạt động hệ thống
-- **Tác nhân**: Admin
-- **Điều kiện trước**: Có dữ liệu hoạt động
-- **Luồng chính**:
-  1. Phân tích người dùng:
-     - Hành vi:
-       + Lượt truy cập
-       + Thời gian dùng
-       + Tương tác
-     - Chuyển đổi:
-       + Tỷ lệ mua hàng
-       + Giá trị giỏ hàng
-       + Tỷ lệ rời bỏ
-     - Phân khúc:
-       + Theo độ tuổi
-       + Theo khu vực
-       + Theo sở thích
-
-  2. Phân tích hiệu quả:
-     - Marketing:
-       + ROI chiến dịch
-       + Hiệu quả khuyến mãi
-       + Kênh thu hút
-     - Vận hành:
-       + Thời gian xử lý
-       + Tỷ lệ hoàn thành
-       + Chi phí vận hành
-     - Dịch vụ:
-       + Độ hài lòng
-       + Thời gian hỗ trợ
-       + Tỷ lệ giải quyết
-
-### 12.3. Báo cáo Tự động
-- **Mô tả**: Tự động hóa báo cáo định kỳ
-- **Tác nhân**: Admin, Vendor
-- **Điều kiện trước**: Thiết lập lịch báo cáo
-- **Luồng chính**:
-  1. Thiết lập báo cáo:
-     - Cấu hình:
-       + Loại báo cáo
-       + Tần suất gửi
-       + Định dạng
-     - Người nhận:
-       + Email nhận
-       + Phân quyền xem
-       + Tùy chỉnh nội dung
-
-  2. Xử lý và gửi:
-     - Tạo báo cáo:
-       + Thu thập dữ liệu
-       + Tính toán chỉ số
-       + Tạo biểu đồ
-     - Phân phối:
-       + Gửi email
-       + Lưu trữ PDF
-       + Thông báo app
-
-- **Luồng ngoại lệ**:
-  1. Lỗi dữ liệu:
-     - Thiếu thông tin
-     - Dữ liệu sai
-     - Không đồng bộ
-  2. Lỗi gửi báo cáo:
-     - Email bounce
-     - File lỗi
-     - Server quá tải
-  3. Phân tích sai:
-     - Số liệu bất thường
-     - Công thức sai
-     - Dữ liệu nhiễu
-
-## 13. Kết luận và Phụ lục
-
-### 13.1. Tổng quan Hệ thống
-- Hệ thống thương mại điện tử với 4 vai trò chính:
-  + Admin: Quản trị toàn bộ hệ thống
-  + Vendor: Quản lý cửa hàng và sản phẩm
-  + User: Mua sắm và tương tác
-  + Shipper: Vận chuyển và giao hàng
-
-- Các tính năng nổi bật:
-  1. Hệ thống thanh toán đa cổng:
-     - VietQR
-     - Momo
-     - VNPay
-     - COD
-  
-  2. Chat và hỗ trợ realtime:
-     - WebSocket
-     - Đa kênh (chat, email, phone)
-     - Tự động phản hồi
-  
-  3. Quản lý vận chuyển thông minh:
-     - Tracking realtime
-     - Tối ưu lộ trình
-     - Xử lý ngoại lệ
-  
-  4. Analytics và báo cáo:
-     - Dashboard tự động
-     - Phân tích chi tiết
-     - Dự báo xu hướng
-
-### 13.2. Phụ lục Kỹ thuật
-- **Yêu cầu Hệ thống**:
-  1. Server:
-     - Java Spring Boot
-     - MySQL Database
-     - Redis Cache
-     - WebSocket Server
-  
-  2. Security:
-     - JWT Authentication
-     - Role-based Access Control
-     - Data Encryption
-  
-  3. Integration:
-     - Payment Gateways
-     - Email Service
-     - SMS Gateway
-     - Map Services
-
-- **API Endpoints**:
-  1. Authentication:
-     - /api/auth/login
-     - /api/auth/register
-     - /api/auth/verify-otp
-  
-  2. Products:
-     - /api/products
-     - /api/products/{id}
-     - /api/products/search
-  
-  3. Orders:
-     - /api/orders
-     - /api/orders/{id}
-     - /api/orders/tracking
-  
-  4. Chat:
-     - /ws/chat
-     - /api/messages
-     - /api/notifications
-
-### 13.3. Quy trình Triển khai
-- **Môi trường**:
-  1. Development:
-     - Local environment
-     - Testing database
-     - Mock services
-  
-  2. Staging:
-     - UAT environment
-     - Test payment integration
-     - Performance testing
-  
-  3. Production:
-     - High availability setup
-     - Load balancing
-     - Monitoring system
-
-- **Maintenance**:
-  1. Backup:
-     - Daily database backup
-     - Transaction logs
-     - User data
-  
-  2. Monitoring:
-     - System health
-     - Performance metrics
-     - Error tracking
-  
-  3. Updates:
-     - Security patches
-     - Feature updates
-     - Bug fixes
-
-### 6.1. Hệ thống Chat và Hỗ trợ
-- **Mô tả**: Hệ thống chat và hỗ trợ tích hợp
-- **Tác nhân**: Tất cả (User, Vendor, Shipper, Admin)
-- **Điều kiện trước**: Đăng nhập hệ thống
-- **Luồng chính**:
-  1. Chat giữa User và Vendor:
-     - Khởi tạo chat:
-       + Chọn cửa hàng
-       + Xem thông tin shop
-       + Bắt đầu trò chuyện
-     - Trao đổi tin nhắn:
-       + Soạn nội dung
-       + Đính kèm file/ảnh
-       + Gửi link sản phẩm
-     - Quản lý hội thoại:
-       + Xem lịch sử chat
-       + Tìm kiếm tin nhắn
-       + Lọc theo thời gian
-
-  2. Chat với Shipper:
-     - Trong quá trình giao:
-       + Tự động kết nối
-       + Chia sẻ vị trí
-       + Cập nhật trạng thái
-     - Tính năng đặc biệt:
-       + Thông báo gần đến
-       + Xác nhận thay đổi
-       + Báo cáo sự cố
-
-  3. Hệ thống hỗ trợ:
-     - Phân loại vấn đề:
-       + Đơn hàng
-       + Thanh toán
-       + Kỹ thuật
-       + Khiếu nại
-     - Xử lý yêu cầu:
-       + Phân công xử lý
-       + Theo dõi tiến độ
-       + Đánh giá kết quả
-
-  4. Quản lý tin nhắn:
-     - Cài đặt thông báo:
-       + Âm thanh
-       + Push notification
-       + Email
-     - Bảo mật:
-       + Mã hóa tin nhắn
-       + Xác thực người dùng
-       + Chống spam
-
-- **Luồng thay thế**:
-  1. Chat tự động:
-     - Trả lời tự động
-     - Gợi ý câu hỏi
-     - Chuyển tới nhân viên
-  2. Hỗ trợ qua email:
-     - Tạo ticket
-     - Theo dõi xử lý
-     - Nhận thông báo
-
-- **Luồng ngoại lệ**:
-  1. Lỗi kết nối:
-     - Lưu tin offline
-     - Gửi lại tự động
-     - Thông báo user
-  2. File không hợp lệ:
-     - Kiểm tra định dạng
-     - Giới hạn dung lượng
-     - Quét malware
-  3. Chặn người dùng:
-     - Vi phạm quy định
-     - Spam/quấy rối
-     - Thời gian chặn
-
-### 6.2. Thông báo
-- **Mô tả**: Hệ thống thông báo
-- **Tác nhân**: Tất cả
-- **Điều kiện trước**: Đăng nhập
-- **Luồng chính**:
-  1. Nhận thông báo
-  2. Đọc thông báo
-  3. Xóa thông báo
-  4. Cài đặt thông báo
-- **Luồng ngoại lệ**:
-  - Lỗi kết nối
-  - Thông báo đã hết hạn
+## Upload Files
+- Hỗ trợ upload ảnh sản phẩm
+- Giới hạn kích thước file: 10MB
+- Đường dẫn lưu trữ ảnh: `uploads/images/`
+
+## Cấu hình Email
+Ứng dụng sử dụng Gmail SMTP để gửi email:
+- Host: smtp.gmail.com
+- Port: 587
+- Yêu cầu xác thực: Có
+- Sử dụng TLS: Có
+
+## Xử lý lỗi thường gặp
+
+### 1. Lỗi kết nối database
+- Kiểm tra SQL Server đã chạy chưa
+- Xác nhận thông tin kết nối trong application.properties
+- Đảm bảo database DTA_PET đã được tạo
+
+### 2. Lỗi thanh toán
+- Kiểm tra cấu hình VNPay/MoMo trong application.properties
+- Đảm bảo đường dẫn callback đúng
+- Kiểm tra log để xem chi tiết lỗi
+
+### 3. Lỗi upload file
+- Kiểm tra thư mục uploads có tồn tại và có quyền ghi
+- Đảm bảo kích thước file không vượt quá 10MB
+
+## 🔄 Quy trình làm việc và bảo mật
+
+### 📦 Quy trình xử lý đơn hàng
+
+<div align="center">
+
+```mermaid
+stateDiagram-v2
+    [*] --> NEW: Đặt hàng
+    NEW --> CONFIRMED: Xác nhận
+    CONFIRMED --> PROCESSING: Chuẩn bị
+    PROCESSING --> SHIPPING: Giao hàng
+    SHIPPING --> DELIVERED: Thành công
+    SHIPPING --> FAILED: Thất bại
+    DELIVERED --> COMPLETED: Xác nhận
+    FAILED --> CANCELLED: Hủy đơn
+```
+
+</div>
+
+<details>
+<summary><b>📋 Chi tiết các trạng thái</b></summary>
+
+| Trạng thái | Mô tả | Thao tác |
+|------------|-------|----------|
+| 🆕 NEW | Đơn hàng mới | Chờ xác nhận |
+| ✅ CONFIRMED | Đã xác nhận | Chuẩn bị hàng |
+| 🔄 PROCESSING | Đang xử lý | Đóng gói |
+| 🚚 SHIPPING | Đang giao | Theo dõi |
+| 📦 DELIVERED | Đã giao | Chờ xác nhận |
+| ✨ COMPLETED | Hoàn tất | Đánh giá |
+| ❌ FAILED | Giao thất bại | Xử lý lại |
+| 🚫 CANCELLED | Đã hủy | Hoàn tiền |
+
+</details>
+
+> 💡 **Tự động hóa:**
+> - 🔄 Tự động cập nhật kho
+> - 📧 Gửi email thông báo
+> - 📱 Push notification
+> - 💰 Xử lý hoàn tiền
+
+### 🔒 Bảo mật và quyền hạn
+
+<details>
+<summary><b>🛡️ Hệ thống bảo mật</b></summary>
+
+<div align="center">
+
+| Lớp bảo mật | Công nghệ | Mô tả |
+|-------------|-----------|--------|
+| 🔐 Xác thực | JWT + OAuth2 | Quản lý phiên đăng nhập |
+| 🔒 Mã hóa | BCrypt | Bảo vệ mật khẩu |
+| 🛡️ API | Spring Security | Kiểm soát truy cập |
+| 📱 2FA | Google Auth | Xác thực 2 lớp |
+
+</div>
+
+</details>
+
+<details>
+<summary><b>🚦 Kiểm soát truy cập</b></summary>
+
+```mermaid
+graph TD
+    A[Request] --> B{JWT Valid?}
+    B -->|Yes| C{Role Check}
+    B -->|No| D[Reject]
+    C -->|Pass| E[Allow]
+    C -->|Fail| D
+```
+
+#### 🔑 Phân quyền chi tiết
+
+| Tài nguyên | Anonymous | User | Staff | Admin |
+|------------|-----------|------|--------|--------|
+| Xem sản phẩm | ✅ | ✅ | ✅ | ✅ |
+| Đặt hàng | ❌ | ✅ | ✅ | ✅ |
+| Quản lý đơn | ❌ | ⚡ | ✅ | ✅ |
+| Cấu hình | ❌ | ❌ | ⚡ | ✅ |
+
+> ✅ Được phép | ⚡ Hạn chế | ❌ Không được phép
+
+</details>
+
+#### 3.1. Xác thực và phân quyền
+- Sử dụng JWT (JSON Web Token):
+  - Token có hiệu lực 24 giờ
+  - Refresh token có hiệu lực 7 ngày
+  - Tự động gia hạn khi hoạt động
+- Phân quyền chi tiết:
+  - USER: Quyền cơ bản của khách hàng
+  - STAFF: Quyền xử lý đơn và hỗ trợ
+  - ADMIN: Toàn quyền quản trị hệ thống
+
+#### 3.2. Bảo mật thông tin
+- Mã hóa mật khẩu bằng BCrypt
+- Mã hóa thông tin thanh toán
+- HTTPS cho mọi giao tiếp
+- Giới hạn số lần đăng nhập sai
+- Xác thực 2 yếu tố cho admin
+
+#### 3.3. Bảo vệ API
+- CORS được cấu hình chặt chẽ
+- Rate limiting cho API
+- Validation cho mọi đầu vào
+- Logging mọi hoạt động quan trọng
+
+#### 3.4. Quy trình backup
+- Backup database tự động mỗi ngày
+- Backup hình ảnh định kỳ
+- Lưu trữ log 30 ngày
+- Khôi phục dữ liệu khi cần
+
+### 4. Xử lý lỗi và sự cố
+
+#### 4.1. Lỗi thanh toán
+- Kiểm tra kết nối cổng thanh toán
+- Xác nhận mã giao dịch
+- Đối soát tự động
+- Quy trình xử lý hoàn tiền
+
+#### 4.2. Lỗi đơn hàng
+- Kiểm tra tồn kho thời gian thực
+- Xử lý conflict đặt hàng
+- Cập nhật trạng thái tự động
+- Thông báo cho khách hàng
+
+### 🔧 Xử lý lỗi và sự cố
+
+<details>
+<summary><b>💳 Xử lý lỗi thanh toán</b></summary>
+
+```mermaid
+flowchart TD
+    A[Lỗi thanh toán] --> B{Loại lỗi}
+    B -->|Kết nối| C[Kiểm tra API]
+    B -->|Giao dịch| D[Đối soát]
+    B -->|Hoàn tiền| E[Xử lý hoàn trả]
+    C --> F[Thử lại]
+    D --> G[Xác nhận với cổng thanh toán]
+    E --> H[Cập nhật trạng thái]
+```
+
+#### 🚨 Quy trình xử lý
+
+1. **Kiểm tra ngay:**
+   - 📡 Kết nối API
+   - 🔍 Mã giao dịch
+   - 💰 Số tiền
+
+2. **Thông báo:**
+   - 📱 SMS
+   - 📧 Email
+   - 🔔 App notification
+
+3. **Giải quyết:**
+   - ⚡ Thử lại giao dịch
+   - 🔄 Chuyển phương thức khác
+   - 💸 Xử lý hoàn tiền
+</details>
+
+<details>
+<summary><b>🔍 Theo dõi hệ thống</b></summary>
+
+<div align="center">
+
+| Monitoring | Tools | Alert |
+|------------|-------|-------|
+| 📊 CPU/RAM | Grafana | > 80% |
+| 💾 Disk | Prometheus | > 90% |
+| 🌐 Network | Pingdom | < 95% |
+| 🔐 Security | Wazuh | Real-time |
+
+</div>
+
+#### 🚀 Auto-scaling
+
+```mermaid
+graph TD
+    A[Monitor Load] --> B{CPU > 80%?}
+    B -->|Yes| C[Scale Up]
+    B -->|No| D{CPU < 30%?}
+    D -->|Yes| E[Scale Down]
+    D -->|No| A
+    C --> F[Add Instance]
+    E --> G[Remove Instance]
+    F --> A
+    G --> A
+```
+
+#### ⚡ Failover Strategy
+
+1. **Phát hiện:**
+   - 🔍 Health check
+   - ⏱️ Response time
+   - 🎯 Error rate
+
+2. **Xử lý:**
+   - 🔄 Auto restart
+   - 🔀 Load balancing
+   - 🚀 Server rotation
+
+3. **Khôi phục:**
+   - 💾 Backup restore
+   - 🔧 Config sync
+   - 📊 Data validation
+
+</details>
+
+### 📞 Hỗ trợ và liên hệ
+
+<div align="center">
+
+| Kênh | Thông tin | Thời gian |
+|------|-----------|-----------|
+| 📧 Email | support@petshop.com | 24/7 |
+| ☎️ Hotline | 1800-xxxx | 8AM-10PM |
+| 💬 Live Chat | Website/App | 24/7 |
+| 📱 Zalo | @petshop | 8AM-9PM |
+
+</div>
+
+> 💡 **Thời gian phản hồi:**
+> - ⚡ Khẩn cấp: 15 phút
+> - 🔄 Thông thường: 2 giờ
+> - 📝 Góp ý: 24 giờ
+
+---
+<div align="center">
+
+### 🌟 Cảm ơn bạn đã sử dụng Pet Shop! 🐾
+
+</div>
+
+## Hỗ trợ và liên hệ
+Nếu có bất kỳ vấn đề hoặc câu hỏi nào, vui lòng liên hệ:
+- Email: caongocthien1902@gmail.com
