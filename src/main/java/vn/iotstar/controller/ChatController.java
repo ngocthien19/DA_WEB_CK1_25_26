@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpSession;
+
 import vn.iotstar.entity.CuaHang;
 import vn.iotstar.entity.DanhMuc;
 import vn.iotstar.entity.NguoiDung;
@@ -36,7 +38,7 @@ public class ChatController {
     
     // Hiển thị trang chat
     @GetMapping("/store/{storeId}")
-    public String showChatPage(@PathVariable Integer storeId, Model model) {
+    public String showChatPage(@PathVariable Integer storeId, Model model, HttpSession session) {
         try {
             // Kiểm tra đăng nhập
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,6 +58,10 @@ public class ChatController {
                 model.addAttribute("error", "Không tìm thấy cửa hàng");
                 return "redirect:/stores";
             }
+
+            // IMPORTANT: Store userId in session for WebSocket
+            session.setAttribute("userId", nguoiDung.getMaNguoiDung());
+            System.out.println("🔑 Stored userId in session: " + nguoiDung.getMaNguoiDung());
 
             // Thêm danh mục vào model (cho header)
             List<DanhMuc> danhMucs = danhMucService.findAllActiveCategories();

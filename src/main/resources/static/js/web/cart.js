@@ -182,6 +182,45 @@ function confirmClearCart() {
 // QUANTITY MANAGEMENT
 // =======================================================
 
+function validateQuantityInput(input) {
+    const maxQuantity = parseInt(input.getAttribute('max'));
+    let value = parseInt(input.value);
+    
+    // Xóa các ký tự không phải số
+    input.value = input.value.replace(/[^0-9]/g, '');
+    
+    // Giới hạn giá trị
+    if (value > maxQuantity) {
+        input.value = maxQuantity;
+    } else if (value < 1 || isNaN(value)) {
+        input.value = 1;
+    }
+}
+
+function onQuantityInputChange(input) {
+    const cartItem = input.closest('.cart-item');
+    const maxQuantity = parseInt(input.getAttribute('max'));
+    let quantity = parseInt(input.value);
+    
+    // Validate số lượng
+    if (isNaN(quantity) || quantity < 1) {
+        quantity = 1;
+        input.value = 1;
+        showToast('warning', 'Cảnh báo', 'Số lượng tối thiểu là 1.');
+        return;
+    }
+    
+    if (quantity > maxQuantity) {
+        quantity = maxQuantity;
+        input.value = maxQuantity;
+        showToast('warning', 'Cảnh báo', 'Rất tiếc, số lượng sản phẩm không đủ.');
+        return;
+    }
+    
+    // Cập nhật giỏ hàng
+    updateCartItem(cartItem, quantity);
+}
+
 function increaseQuantity(button) {
     const cartItem = button.closest('.cart-item');
     const input = cartItem.querySelector('.quantity-input');
@@ -464,7 +503,7 @@ function updateCartCountFromServer() {
     });
 }
 
-function showToast(type, title, message) {
+function showToast(type, title, message, duration = 4000) {
     const existingToast = document.querySelector('.toast');
     if (existingToast) {
         existingToast.remove();
@@ -490,7 +529,7 @@ function showToast(type, title, message) {
             <div class="toast-title">${title}</div>
             <div class="toast-message">${message}</div>
         </div>
-        <button class="toast-close" onclick="this.closest('.toast').classList.add('hide')">
+        <button class="toast-close" onclick="this.closest('.toast').remove()">
             <i class="fa-solid fa-xmark"></i>
         </button>
     `;
@@ -504,9 +543,11 @@ function showToast(type, title, message) {
     setTimeout(() => {
         toast.classList.add('hide');
         setTimeout(() => {
-            toast.remove();
+            if (toast.parentNode) {
+                toast.remove();
+            }
         }, 300);
-    }, 3000);
+    }, duration);
 }
 
 // =======================================================
@@ -518,7 +559,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeleteBtn = document.getElementById('confirmDeleteButton');
     const confirmBulkDeleteBtn = document.getElementById('confirmBulkDeleteButton');
     const confirmClearCartBtn = document.getElementById('confirmClearCartButton');
-    const checkoutBtn = document.querySelector('.btn-checkout');
     
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', confirmRemove);
@@ -530,12 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (confirmClearCartBtn) {
         confirmClearCartBtn.addEventListener('click', confirmClearCart);
-    }
-    
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', function() {
-            window.location.href = '/orders';
-        });
     }
     
     // Checkbox event listeners
@@ -718,3 +752,25 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     }
 });
+
+// =======================================================
+// CHECKOUT LOGIC - Handle selected items
+// =======================================================
+
+function proceedToCheckout(event) {
+    event.preventDefault();
+    
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox-input');
+    const selectedItems = Array.from(itemCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => parseInt(checkbox.value));
+    
+    if (selectedItems.length === 0) {
+        showToast('warning', 'Chưa chọn sản phẩm', 'Vui lòng chọn ít nhất một sản phẩm để xem chi tiết đơn hàng.');
+        return;
+    }
+    
+    // Chuyển đến trang đơn hàng với danh sách sản phẩm đã chọn
+    const selectedItemsParam = selectedItems.join(',');
+    window.location.href = `/orders?selectedItems=${selectedItemsParam}`;
+}

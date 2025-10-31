@@ -79,7 +79,7 @@
 	        </div>
 	        <div class="product-grid">
 	            <!-- Chó Cảnh Products -->
-	            <div th:if="${not #lists.isEmpty(sanPhams_1)}" th:each="product : ${sanPhams_1}" class="product-card" data-aos="fade-up" data-aos-delay="100">
+	            <div th:if="${not #lists.isEmpty(sanPhams_4)}" th:each="product : ${sanPhams_4}" class="product-card" data-aos="fade-up" data-aos-delay="100">
 	                <div class="product-image-container">
 	                    <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
 	                        <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
@@ -114,7 +114,7 @@
 	            </div>
 	
 	            <!-- Mèo Cảnh Products -->
-	            <div th:if="${not #lists.isEmpty(sanPhams_2)}" th:each="product : ${sanPhams_2}" class="product-card" data-aos="fade-up" data-aos-delay="200">
+	            <div th:if="${not #lists.isEmpty(sanPhams_5)}" th:each="product : ${sanPhams_5}" class="product-card" data-aos="fade-up" data-aos-delay="200">
 	                <div class="product-image-container">
 	                    <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
 	                        <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
@@ -149,7 +149,7 @@
 	            </div>
 	
 	            <!-- Phụ Kiện Products -->
-	            <div th:if="${not #lists.isEmpty(sanPhams_3)}" th:each="product : ${sanPhams_3}" class="product-card" data-aos="fade-up" data-aos-delay="300">
+	            <div th:if="${not #lists.isEmpty(sanPhams_6)}" th:each="product : ${sanPhams_6}" class="product-card" data-aos="fade-up" data-aos-delay="300">
 	                <div class="product-image-container">
 	                    <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
 	                        <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
@@ -199,16 +199,17 @@
                 </a>
             </div>
             <div class="product-grid">
-                <div th:if="${not #lists.isEmpty(sanPhams_1)}" th:each="product : ${sanPhams_1}" class="product-card" data-aos="fade-up" data-aos-delay="100">
+                <!-- Chó Cảnh Products -->
+                <div th:if="${not #lists.isEmpty(sanPhams_4)}" th:each="product : ${sanPhams_4}" class="product-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="product-image-container">
-				        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
-				            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
-				        </a>
-				        <div class="product-like">
-				            <i class="fa-solid fa-heart like-icon"></i>
-				            <span class="like-count" th:text="${product.LuotThich} ?: 0">0</span>
-				        </div>
-				    </div>
+                        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
+                            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
+                        </a>
+                        <div class="product-like">
+                            <i class="fa-solid fa-heart like-icon"></i>
+                            <span class="like-count" th:text="${product.LuotThich} ?: 0">0</span>
+                        </div>
+                    </div>
                     <div class="product-info">
                         <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
                             <h4 th:text="${product.TenSanPham}"></h4>
@@ -231,7 +232,7 @@
                         </button>
                     </div>
                 </div>
-                <div th:if="${#lists.isEmpty(sanPhams_1)}" class="no-data-message">
+                <div th:if="${#lists.isEmpty(sanPhams_4)}" class="no-data-message">
                     Không có dữ liệu cho danh mục Chó Cảnh.
                 </div>
             </div>
@@ -251,7 +252,7 @@
                 </a>
             </div>
             <div class="product-grid">
-                <div th:if="${not #lists.isEmpty(sanPhams_2)}" th:each="product : ${sanPhams_2}" class="product-card" data-aos="fade-up" data-aos-delay="200">
+                <div th:if="${not #lists.isEmpty(sanPhams_5)}" th:each="product : ${sanPhams_5}" class="product-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="product-image-container">
 				        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
 				            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
@@ -283,7 +284,7 @@
                         </button>
                     </div>
                 </div>
-                <div th:if="${#lists.isEmpty(sanPhams_2)}" class="no-data-message">
+                <div th:if="${#lists.isEmpty(sanPhams_5)}" class="no-data-message">
                     Không có dữ liệu cho danh mục Mèo Cảnh.
                 </div>
             </div>
@@ -303,7 +304,7 @@
                 </a>
             </div>
             <div class="product-grid">
-                <div th:if="${not #lists.isEmpty(sanPhams_3)}" th:each="product : ${sanPhams_3}" class="product-card" data-aos="fade-up" data-aos-delay="300">
+                <div th:if="${not #lists.isEmpty(sanPhams_6)}" th:each="product : ${sanPhams_6}" class="product-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="product-image-container">
 				        <a th:href="@{/view/{MaSanPham}(MaSanPham=${product.MaSanPham})}">
 				            <img th:src="${product.HinhAnh}" th:alt="${product.TenSanPham}" class="product-image">
@@ -335,7 +336,7 @@
                         </button>
                     </div>
                 </div>
-                <div th:if="${#lists.isEmpty(sanPhams_3)}" class="no-data-message">
+                <div th:if="${#lists.isEmpty(sanPhams_6)}" class="no-data-message">
                     Không có dữ liệu cho danh mục Phụ Kiện.
                 </div>
             </div>
@@ -456,9 +457,6 @@
 	                            <img id="currentStoreAvatar" src="/images/default-store.png" alt="Store" class="store-chat-avatar">
 	                            <div class="store-chat-details">
 	                                <h4 id="currentStoreName">Cửa hàng</h4>
-	                                <span class="online-status">
-	                                    <i class="fa-solid fa-circle"></i> Đang hoạt động
-	                                </span>
 	                            </div>
 	                        </div>
 	                        <div class="store-chat-actions">
@@ -510,8 +508,8 @@
 	    </div>
 	</div>
 	
-	<!-- Chat Toggle Button - HIỂN THỊ CHO TẤT CẢ NGƯỜI DÙNG -->
-	<button id="chatToggleBtn" class="chat-toggle-btn">
+	<!-- Chat Toggle Button - CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP -->
+	<button th:if="${nguoiDung != null}" id="chatToggleBtn" class="chat-toggle-btn">
 	    <i class="fa-solid fa-comments"></i>
 	    <span class="unread-badge" id="chatUnreadBadge" style="display: none;">0</span>
 	</button>
@@ -564,6 +562,48 @@
     <!-- Cart Functionality Script -->
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+		    // ======================================================
+		    // LOGIC 0: XỬ LÝ THÔNG BÁO ĐĂNG KÝ CỬA HÀNG THÀNH CÔNG
+		    // ======================================================
+		    
+		    // Kiểm tra flag từ localStorage (sau khi reload)
+		    const justRegisteredStore = localStorage.getItem('justRegisteredStore');
+		    if (justRegisteredStore === 'true') {
+		        localStorage.removeItem('justRegisteredStore');
+		        if (typeof showToast === 'function') {
+		            showToast('success', 'Thành công!', 'Đăng ký cửa hàng thành công! Chào mừng bạn đến với kênh người bán hàng.', 5000);
+		        }
+		    }
+		    
+		    // Kiểm tra flash attribute từ server
+		    const storeRegistrationSuccess = /*[[${storeRegistrationSuccess}]]*/ false;
+		    const successMessage = /*[[${successMessage}]]*/ '';
+		    
+		    if (storeRegistrationSuccess) {
+		        // Cập nhật role user trong localStorage
+		        const userDataStr = localStorage.getItem('user');
+		        if (userDataStr) {
+		            try {
+		                const userData = JSON.parse(userDataStr);
+		                // Cập nhật role thành VENDOR
+		                userData.role = 'VENDOR';
+		                if (userData.vaiTro) {
+		                    userData.vaiTro.maVaiTro = 'VENDOR';
+		                }
+		                // Lưu lại vào localStorage
+		                localStorage.setItem('user', JSON.stringify(userData));
+		                
+		                // Đánh dấu để hiển thị thông báo sau khi reload
+		                localStorage.setItem('justRegisteredStore', 'true');
+		                
+		                // Reload trang để cập nhật UI
+		                location.reload();
+		            } catch (e) {
+		                console.error('Error updating user role:', e);
+		            }
+		        }
+		    }
+		    
 		    // ======================================================
 		    // LOGIC 1: THÊM VÀO GIỎ HÀNG (GIỮ NGUYÊN)
 		    // ======================================================
@@ -662,6 +702,27 @@
 		                behavior: 'smooth'
 		            });
 		        });
+		    }
+		    
+		    // ======================================================
+		    // LOGIC 3: ẨN NÚT CHAT KHI CHƯA ĐĂNG NHẬP
+		    // ======================================================
+		    
+		    // Kiểm tra xem người dùng đã đăng nhập chưa
+		    const currentUserId = document.getElementById('currentUserId');
+		    const chatToggleBtn = document.getElementById('chatToggleBtn');
+		    
+		    if (chatToggleBtn && currentUserId) {
+		        const userId = parseInt(currentUserId.value);
+		        
+		        // Nếu userId = 0 hoặc không hợp lệ, ẩn nút chat
+		        if (!userId || userId === 0) {
+		            chatToggleBtn.style.display = 'none';
+		            console.log('Chat button hidden: User not logged in');
+		        } else {
+		            chatToggleBtn.style.display = 'flex';
+		            console.log('Chat button visible: User logged in with ID:', userId);
+		        }
 		    }
 		});
 	</script>

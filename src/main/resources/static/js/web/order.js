@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    }
     
     // Hiển thị toast notification
-    function showToast(type, title, message) {
+    function showToast(type, title, message, duration = 4000) {
         const existingToast = document.querySelector('.toast');
         if (existingToast) {
             existingToast.remove();
@@ -202,17 +202,30 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.body.appendChild(toast);
         
+        // Hiển thị toast với animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
         // Xử lý sự kiện đóng toast
         toast.querySelector('.toast-close').addEventListener('click', function() {
-            toast.remove();
+            toast.classList.add('hide');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
         });
         
-        // Tự động ẩn sau 5 giây
+        // Tự động ẩn sau duration
         setTimeout(() => {
-            if (toast.parentNode) {
-                toast.remove();
-            }
-        }, 5000);
+            toast.classList.add('hide');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }, duration);
     }
     
     // Thêm sự kiện input để clear validation real-time

@@ -159,7 +159,7 @@ public class VendorDashboardController {
      * Hiển thị trang tin nhắn (Messages)
      */
     @GetMapping("/messages")
-    public String showMessages(Model model) {
+    public String showMessages(Model model, jakarta.servlet.http.HttpSession session) {
         try {
             // Kiểm tra quyền và lấy user
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -184,6 +184,10 @@ public class VendorDashboardController {
             }
             
             CuaHang cuaHang = cuaHangList.get(0);
+            
+            // IMPORTANT: Store userId in session for WebSocket
+            session.setAttribute("userId", user.getMaNguoiDung());
+            System.out.println("🔑 Stored vendor userId in session: " + user.getMaNguoiDung());
             
             // Kiểm tra trạng thái cửa hàng
             if (cuaHang.getTrangThai() == false) {
